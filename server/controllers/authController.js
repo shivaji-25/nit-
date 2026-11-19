@@ -17,7 +17,7 @@ const generateToken = (id) => {
 // @access  Public
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, requiredRole } = req.body;
 
     // Validate inputs
     if (!email || !password) {
@@ -50,6 +50,14 @@ exports.login = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password',
+      });
+    }
+
+    // Enforce role rule: if login is attempted from a specific category portal link, verify role match
+    if (requiredRole && user.role !== requiredRole) {
+      return res.status(403).json({
+        success: false,
+        message: `Portal rule violation: This portal is strictly for '${requiredRole.toUpperCase()}', but your account is registered as '${user.role.toUpperCase()}'. Please log in via the /${user.role} link.`,
       });
     }
 

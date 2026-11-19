@@ -38,12 +38,15 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, requiredRole = null) => {
     try {
+      const payload = { email, password };
+      if (requiredRole) payload.requiredRole = requiredRole;
+
       const res = await fetch('http://localhost:5000/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -54,7 +57,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       localStorage.setItem('food_mfg_token', data.token);
       localStorage.setItem('food_mfg_user', JSON.stringify(data.user));
-      return { success: true };
+      return { success: true, user: data.user };
     } catch (err) {
       return { success: false, message: err.message };
     }
