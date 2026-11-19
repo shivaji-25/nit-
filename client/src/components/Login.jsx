@@ -333,17 +333,6 @@ export const Login = () => {
               </div>
             </div>
 
-            <div className="reg-rules-box">
-              <span className="rules-heading">Required Rules:</span>
-              <ul>
-                <li>Valid First & Last Name</li>
-                <li>Valid Gmail / Email format</li>
-                <li>Exactly 10-digit Phone Number</li>
-                <li>Password of 6+ characters (Salted hash)</li>
-                <li>Saved exclusively into <code>user_folder</code></li>
-              </ul>
-            </div>
-
             <button type="submit" disabled={submitting} className="btn-primary">
               {submitting ? 'Creating Account...' : 'Create Account'}
             </button>
