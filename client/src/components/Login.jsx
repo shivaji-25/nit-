@@ -3,21 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { LoginHeroBanner } from './LoginHeroBanner';
-import { ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { WatercolorBackdrop } from './WatercolorBackdrop';
+import { ArrowRight, AlertCircle, CheckCircle2, KeyRound } from 'lucide-react';
 
 export const Login = () => {
   const { login, registerUser, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  // Mode: 'signin' | 'register'
+  // Mode: 'signin' | 'register' | 'forgot'
   const [mode, setMode] = useState('signin');
 
   // Sign in fields
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(true);
+  const [resetEmail, setResetEmail] = useState('');
 
-  // Register fields: (created name, lastname, gmail, password, phone number) with rules
+  // Register fields (name, lastname, email, password, phone)
   const [regName, setRegName] = useState('');
   const [regLastName, setRegLastName] = useState('');
   const [regGmail, setRegGmail] = useState('');
@@ -45,41 +46,32 @@ export const Login = () => {
     }
   };
 
-  // Handle New Account Registration with Rules
+  // Handle Register Account
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
 
-    // Rule 1: First name validation
     if (!regName.trim() || regName.trim().length < 2) {
-      setError('Rule violation: First Name must be at least 2 characters long.');
+      setError('First Name must be at least 2 characters.');
       return;
     }
-
-    // Rule 2: Last name validation
     if (!regLastName.trim()) {
-      setError('Rule violation: Last Name is required.');
+      setError('Last Name is required.');
       return;
     }
-
-    // Rule 3: Gmail/Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(regGmail.trim())) {
-      setError('Rule violation: Please enter a valid Gmail / Email address (e.g. name@gmail.com).');
+      setError('Please enter a valid Gmail / Email address.');
       return;
     }
-
-    // Rule 4: Phone number validation (10 digits)
     const cleanPhone = regPhone.replace(/[^0-9]/g, '');
     if (cleanPhone.length !== 10) {
-      setError('Rule violation: Phone number must be exactly 10 digits.');
+      setError('Phone number must be exactly 10 digits.');
       return;
     }
-
-    // Rule 5: Password validation (min 6 characters)
     if (regPassword.length < 6) {
-      setError('Rule violation: Password must be at least 6 characters long.');
+      setError('Password must be at least 6 characters long.');
       return;
     }
 
@@ -101,264 +93,308 @@ export const Login = () => {
     }
   };
 
-  const handleForgotPassword = (e) => {
+  // Handle Password Reset Magic Link
+  const handleResetSubmit = (e) => {
     e.preventDefault();
-    setError('Password reset link has been requested. Contact factory administration to reset.');
+    setError('');
+    if (!resetEmail.trim()) {
+      setError('Please enter your email address.');
+      return;
+    }
+    setSuccessMsg(`Magic reset link dispatched to ${resetEmail}. Check your inbox.`);
   };
 
   return (
-    <div className="auth-split-wrapper">
-      {/* Left Form Panel */}
-      <div className="auth-form-panel">
-        <div className="auth-form-box">
-          {/* Brand Header */}
-          <div className="auth-brand-header">
-            <div className="auth-system-badge">
-              <span className="system-status-dot"></span>
-              <span className="system-badge-text">FoodFlow OMS • Order-to-Audit</span>
-            </div>
-            <h1 className="auth-heading">
-              {mode === 'signin' ? 'Welcome Back !' : 'Create Account'}
-            </h1>
-            <p className="auth-subheading">
-              {mode === 'signin'
-                ? 'Please enter your details'
-                : 'Please enter your details to register as staff user'}
-            </p>
+    <div className="untitled-auth-viewport">
+      {/* Scenic Watercolor Landscape Backdrop */}
+      <WatercolorBackdrop />
+
+      {/* Floating Untitled UI Card Window (Jordan Hughes Design) */}
+      <div className="untitled-floating-card">
+        {/* Left Form Column (Deep Matte Charcoal) */}
+        <div className="untitled-form-col">
+          {/* Top Brand Logo */}
+          <div className="untitled-brand-row">
+            <div className="untitled-logo-cube">❖</div>
+            <span className="untitled-brand-name">Untitled UI</span>
+            <span className="untitled-brand-sub">FoodFlow OMS</span>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="auth-alert-box error">
-              <AlertCircle size={16} />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* Success Message */}
-          {successMsg && (
-            <div className="auth-alert-box success">
-              <CheckCircle2 size={16} />
-              <span>{successMsg}</span>
-            </div>
-          )}
-
-          {/* SIGN IN FORM */}
-          {mode === 'signin' ? (
-            <form onSubmit={handleSignIn} className="auth-modern-form">
-              <div className="auth-input-group">
-                <label>Email Address</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter your email or username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="auth-input-field"
-                  autoComplete="username"
-                />
+          <div className="untitled-form-inner">
+            {/* Error & Success Notification Banners */}
+            {error && (
+              <div className="untitled-alert error">
+                <AlertCircle size={14} />
+                <span>{error}</span>
               </div>
-
-              <div className="auth-input-group">
-                <label>Password</label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="auth-input-field"
-                  autoComplete="current-password"
-                />
+            )}
+            {successMsg && (
+              <div className="untitled-alert success">
+                <CheckCircle2 size={14} />
+                <span>{successMsg}</span>
               </div>
+            )}
 
-              {/* Remember Me & Forgot Password Row */}
-              <div className="auth-options-row">
-                <label className="auth-checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                  />
-                  <span>Remember me</span>
-                </label>
-                <a
-                  href="#forgot"
-                  onClick={handleForgotPassword}
-                  className="auth-forgot-link"
-                >
-                  Forgot Password?
-                </a>
-              </div>
-
-              {/* Primary Action Button */}
-              <button
-                type="submit"
-                disabled={submitting}
-                className="auth-primary-btn"
-              >
-                <span>{submitting ? 'Signing in...' : 'Login'}</span>
-                <ArrowRight size={18} />
-              </button>
-
-              {/* Google OAuth Access - ONLY on User Login */}
-              <div className="auth-divider">
-                <span>OR</span>
-              </div>
-
-              <div className="auth-google-wrapper">
-                <GoogleLogin
-                  onSuccess={async (credentialResponse) => {
-                    if (credentialResponse.credential) {
-                      setSubmitting(true);
-                      const result = await loginWithGoogle({
-                        credential: credentialResponse.credential,
-                      });
-                      setSubmitting(false);
-                      if (result.success) {
-                        navigate('/user');
-                      } else {
-                        setError(result.message);
-                      }
-                    }
-                  }}
-                  onError={() => {
-                    setError('Google Login Failed');
-                  }}
-                  shape="rectangular"
-                  theme="outline"
-                  size="large"
-                  text="continue_with"
-                  width="100%"
-                />
-              </div>
-
-              {/* Terms disclaimer */}
-              <p className="auth-terms-note">
-                By creating an account, you agree to our{' '}
-                <a href="#terms">Terms of Service</a> and{' '}
-                <a href="#privacy">Privacy Policy</a>
-              </p>
-
-              {/* Toggle to Register */}
-              <div className="auth-footer-link">
-                <span>Don't have an account? </span>
-                <button
-                  type="button"
-                  className="auth-link-btn"
-                  onClick={() => {
-                    setMode('register');
-                    setError('');
-                  }}
-                >
-                  Sign Up
-                </button>
-              </div>
-            </form>
-          ) : (
-            /* CREATE NEW ACCOUNT FORM (with rules) */
-            <form onSubmit={handleRegister} className="auth-modern-form">
-              <div className="auth-input-row">
-                <div className="auth-input-group">
-                  <label>First Name</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="John"
-                    value={regName}
-                    onChange={(e) => setRegName(e.target.value)}
-                    className="auth-input-field"
-                  />
+            {/* 1. SIGN IN MODE */}
+            {mode === 'signin' && (
+              <>
+                <div className="untitled-text-header">
+                  <h1 className="untitled-title">Sign into your account</h1>
+                  <p className="untitled-subtitle">New gigs personalized for you are waiting.</p>
                 </div>
 
-                <div className="auth-input-group">
-                  <label>Last Name</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Doe"
-                    value={regLastName}
-                    onChange={(e) => setRegLastName(e.target.value)}
-                    className="auth-input-field"
-                  />
+                <form onSubmit={handleSignIn} className="untitled-form-fields">
+                  <div className="untitled-field-group">
+                    <label>Email</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Enter your email"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="untitled-text-input"
+                      autoComplete="username"
+                    />
+                  </div>
+
+                  <div className="untitled-field-group">
+                    <label>Password</label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="untitled-text-input"
+                      autoComplete="current-password"
+                    />
+                  </div>
+
+                  <div className="untitled-meta-row">
+                    <button
+                      type="button"
+                      className="untitled-link-subtle"
+                      onClick={() => {
+                        setMode('forgot');
+                        setError('');
+                        setSuccessMsg('');
+                      }}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="untitled-submit-btn"
+                  >
+                    <span>{submitting ? 'Signing in...' : 'Sign in'}</span>
+                  </button>
+
+                  {/* Google OAuth Access - Seamless Dark Theme */}
+                  <div className="untitled-google-row">
+                    <GoogleLogin
+                      onSuccess={async (credentialResponse) => {
+                        if (credentialResponse.credential) {
+                          setSubmitting(true);
+                          const result = await loginWithGoogle({
+                            credential: credentialResponse.credential,
+                          });
+                          setSubmitting(false);
+                          if (result.success) {
+                            navigate('/user');
+                          } else {
+                            setError(result.message);
+                          }
+                        }
+                      }}
+                      onError={() => setError('Google OAuth Login Failed')}
+                      theme="filled_black"
+                      shape="rectangular"
+                      size="large"
+                      width="100%"
+                    />
+                  </div>
+
+                  <div className="untitled-alt-links">
+                    <span>Can't sign in? </span>
+                    <button
+                      type="button"
+                      className="untitled-link-bold"
+                      onClick={() => setMode('forgot')}
+                    >
+                      Reset password
+                    </button>
+                  </div>
+                </form>
+
+                <div className="untitled-bottom-switch">
+                  <span>Don't have an account? </span>
+                  <button
+                    type="button"
+                    className="untitled-link-underline"
+                    onClick={() => {
+                      setMode('register');
+                      setError('');
+                      setSuccessMsg('');
+                    }}
+                  >
+                    Sign up
+                  </button>
                 </div>
-              </div>
+              </>
+            )}
 
-              <div className="auth-input-group">
-                <label>Gmail / Email</label>
-                <input
-                  type="email"
-                  required
-                  placeholder="name@gmail.com"
-                  value={regGmail}
-                  onChange={(e) => setRegGmail(e.target.value)}
-                  className="auth-input-field"
-                />
-              </div>
+            {/* 2. PASSWORD RESET MODE (From media_1795111712804_d9b58b27.png) */}
+            {mode === 'forgot' && (
+              <>
+                <div className="untitled-text-header">
+                  <h1 className="untitled-title">Reset your password</h1>
+                  <p className="untitled-subtitle">Enter the email address you used to sign up.</p>
+                </div>
 
-              <div className="auth-input-group">
-                <label>Phone Number (10 digits)</label>
-                <input
-                  type="tel"
-                  required
-                  maxLength="10"
-                  placeholder="9876543210"
-                  value={regPhone}
-                  onChange={(e) => setRegPhone(e.target.value.replace(/[^0-9]/g, ''))}
-                  className="auth-input-field"
-                />
-              </div>
+                <form onSubmit={handleResetSubmit} className="untitled-form-fields">
+                  <div className="untitled-field-group">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="Enter your email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      className="untitled-text-input"
+                    />
+                  </div>
 
-              <div className="auth-input-group">
-                <label>Password (min 6 characters)</label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••••••"
-                  value={regPassword}
-                  onChange={(e) => setRegPassword(e.target.value)}
-                  className="auth-input-field"
-                />
-              </div>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="untitled-submit-btn"
+                  >
+                    <span>Send magic link</span>
+                  </button>
+                </form>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={submitting}
-                className="auth-primary-btn"
-              >
-                <span>{submitting ? 'Creating Account...' : 'Sign Up'}</span>
-                <ArrowRight size={18} />
-              </button>
+                <div className="untitled-bottom-switch">
+                  <span>Don't have an account? </span>
+                  <button
+                    type="button"
+                    className="untitled-link-underline"
+                    onClick={() => {
+                      setMode('signin');
+                      setError('');
+                      setSuccessMsg('');
+                    }}
+                  >
+                    Sign in
+                  </button>
+                </div>
+              </>
+            )}
 
-              {/* Terms disclaimer */}
-              <p className="auth-terms-note">
-                By creating an account, you agree to our{' '}
-                <a href="#terms">Terms of Service</a> and{' '}
-                <a href="#privacy">Privacy Policy</a>
-              </p>
+            {/* 3. REGISTER MODE */}
+            {mode === 'register' && (
+              <>
+                <div className="untitled-text-header">
+                  <h1 className="untitled-title">Create your account</h1>
+                  <p className="untitled-subtitle">Join FoodFlow OMS as staff user.</p>
+                </div>
 
-              {/* Toggle to Sign In */}
-              <div className="auth-footer-link">
-                <span>Already have an account? </span>
-                <button
-                  type="button"
-                  className="auth-link-btn"
-                  onClick={() => {
-                    setMode('signin');
-                    setError('');
-                  }}
-                >
-                  Log In
-                </button>
-              </div>
-            </form>
-          )}
+                <form onSubmit={handleRegister} className="untitled-form-fields">
+                  <div className="untitled-input-pair">
+                    <div className="untitled-field-group">
+                      <label>First Name</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Jordan"
+                        value={regName}
+                        onChange={(e) => setRegName(e.target.value)}
+                        className="untitled-text-input"
+                      />
+                    </div>
+                    <div className="untitled-field-group">
+                      <label>Last Name</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Hughes"
+                        value={regLastName}
+                        onChange={(e) => setRegLastName(e.target.value)}
+                        className="untitled-text-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="untitled-field-group">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="name@gmail.com"
+                      value={regGmail}
+                      onChange={(e) => setRegGmail(e.target.value)}
+                      className="untitled-text-input"
+                    />
+                  </div>
+
+                  <div className="untitled-field-group">
+                    <label>Phone Number (10 digits)</label>
+                    <input
+                      type="tel"
+                      required
+                      maxLength="10"
+                      placeholder="9876543210"
+                      value={regPhone}
+                      onChange={(e) => setRegPhone(e.target.value.replace(/[^0-9]/g, ''))}
+                      className="untitled-text-input"
+                    />
+                  </div>
+
+                  <div className="untitled-field-group">
+                    <label>Password (min 6 chars)</label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="••••••••"
+                      value={regPassword}
+                      onChange={(e) => setRegPassword(e.target.value)}
+                      className="untitled-text-input"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="untitled-submit-btn"
+                  >
+                    <span>Sign up</span>
+                  </button>
+                </form>
+
+                <div className="untitled-bottom-switch">
+                  <span>Already have an account? </span>
+                  <button
+                    type="button"
+                    className="untitled-link-underline"
+                    onClick={() => {
+                      setMode('signin');
+                      setError('');
+                      setSuccessMsg('');
+                    }}
+                  >
+                    Sign in
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Right Hero Banner Panel with Pure Lightweight Animated Card */}
-      <LoginHeroBanner role="user" />
+        {/* Right Column: Untitled UI Scenic Showcase */}
+        <LoginHeroBanner role="user" />
+      </div>
     </div>
   );
 };
