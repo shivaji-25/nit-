@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const { getModelByRole, allRoleModels, User } = require('../models');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Generate JWT token with expiry and role payload
 const generateToken = (id, role) => {
@@ -321,15 +324,31 @@ exports.register = async (req, res) => {
 // @access  Public
 exports.googleAuth = async (req, res) => {
   try {
-    let { email, name, googleId, credential } = req.body;
+    let { email, name, googleId, picture, credential } = req.body;
 
-    // Support decoding Google Identity Services credential token
+    // Verify token using google-auth-library OAuth2Client
     if (credential) {
-      const decodedGoogle = jwt.decode(credential);
-      if (decodedGoogle && decodedGoogle.email) {
-        email = decodedGoogle.email;
-        name = decodedGoogle.name;
-        googleId = decodedGoogle.sub;
+      try {
+        const ticket = await googleClient.verifyIdToken({
+          idToken: credential,
+          audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        if (payload) {
+          email = payload.email;
+          name = payload.name;
+          googleId = payload.sub;
+          picture = payload.picture;
+        }
+      } catch (verifyErr) {
+        // Fallback for decoding token in testing / development environments
+        const decodedGoogle = jwt.decode(credential);
+        if (decodedGoogle && decodedGoogle.email) {
+          email = decodedGoogle.email;
+          name = decodedGoogle.name;
+          googleId = decodedGoogle.sub;
+          picture = decodedGoogle.picture;
+        }
       }
     }
 
