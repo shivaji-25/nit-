@@ -26,13 +26,6 @@ export const Login = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Google Sign-In Modal States (Only on User Login page)
-  const [showGoogleModal, setShowGoogleModal] = useState(false);
-  const [googleEmailInput, setGoogleEmailInput] = useState('');
-  const [googleNameInput, setGoogleNameInput] = useState('');
-  const [googleModalError, setGoogleModalError] = useState('');
-  const [googleSubmitting, setGoogleSubmitting] = useState(false);
-
   // Handle Standard User Login
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -104,46 +97,6 @@ export const Login = () => {
     } else {
       setError(result.message);
     }
-  };
-
-  // Open Google Sign-In Modal (Only on User Login page)
-  const handleGoogleAccess = () => {
-    setError('');
-    setGoogleModalError('');
-    setShowGoogleModal(true);
-  };
-
-  const submitGoogleAuth = async (emailToUse, nameToUse) => {
-    setGoogleModalError('');
-    setGoogleSubmitting(true);
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailToUse.trim())) {
-      setGoogleModalError('Please enter a valid Gmail / Google email address.');
-      setGoogleSubmitting(false);
-      return;
-    }
-
-    const defaultName = nameToUse || emailToUse.split('@')[0];
-    const result = await loginWithGoogle({
-      email: emailToUse.trim().toLowerCase(),
-      name: defaultName,
-      googleId: 'g_' + Math.random().toString(36).substring(2, 10),
-    });
-
-    setGoogleSubmitting(false);
-    if (result.success) {
-      setShowGoogleModal(false);
-      navigate('/user');
-    } else {
-      setGoogleModalError(result.message);
-    }
-  };
-
-  const handleCustomGoogleSubmit = async (e) => {
-    e.preventDefault();
-    if (!googleEmailInput.trim()) return;
-    await submitGoogleAuth(googleEmailInput, googleNameInput);
   };
 
   return (
@@ -232,63 +185,34 @@ export const Login = () => {
               {submitting ? 'Verifying...' : 'Sign In'}
             </button>
 
-            {/* Google OAuth & Account Access - ONLY on User Login */}
+            {/* Google OAuth Access - ONLY on User Login */}
             <div className="google-divider">
-              <span>OR CONTINUE WITH GOOGLE</span>
+              <span>OR</span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
-              <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                <GoogleLogin
-                  onSuccess={async (credentialResponse) => {
-                    if (credentialResponse.credential) {
-                      setSubmitting(true);
-                      const result = await loginWithGoogle({ credential: credentialResponse.credential });
-                      setSubmitting(false);
-                      if (result.success) {
-                        navigate('/user');
-                      } else {
-                        setError(result.message);
-                      }
+            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '6px' }}>
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  if (credentialResponse.credential) {
+                    setSubmitting(true);
+                    const result = await loginWithGoogle({ credential: credentialResponse.credential });
+                    setSubmitting(false);
+                    if (result.success) {
+                      navigate('/user');
+                    } else {
+                      setError(result.message);
                     }
-                  }}
-                  onError={() => {
-                    setError('Google OAuth verification failed. You can also use Account Chooser below.');
-                  }}
-                  shape="rectangular"
-                  theme="outline"
-                  size="large"
-                  text="continue_with"
-                  width="340"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={handleGoogleAccess}
-                disabled={submitting}
-                className="btn-google"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  />
-                </svg>
-                <span>Google Account Chooser (Instant)</span>
-              </button>
+                  }
+                }}
+                onError={() => {
+                  setError('Google Login Failed');
+                }}
+                shape="rectangular"
+                theme="outline"
+                size="large"
+                text="continue_with"
+                width="100%"
+              />
             </div>
           </form>
         ) : (
@@ -373,120 +297,6 @@ export const Login = () => {
           </form>
         )}
       </div>
-
-      {/* Integrated Google Sign-In Modal (Only on User Login page) */}
-      {showGoogleModal && (
-        <div className="google-modal-overlay" onClick={() => !googleSubmitting && setShowGoogleModal(false)}>
-          <div className="google-modal-card" onClick={(e) => e.stopPropagation()}>
-            {/* Google Header */}
-            <div className="google-modal-header">
-              <svg width="36" height="36" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                />
-              </svg>
-              <h3>Sign in with Google</h3>
-              <p>Choose a Google account to continue to FoodFlow OMS</p>
-            </div>
-
-            {googleModalError && (
-              <div className="error-box" style={{ marginBottom: '14px' }}>
-                <span>{googleModalError}</span>
-              </div>
-            )}
-
-            {/* Quick Select Accounts */}
-            <div className="google-account-list">
-              <button
-                type="button"
-                className="google-account-item"
-                disabled={googleSubmitting}
-                onClick={() => submitGoogleAuth('sivajics49@gmail.com', 'Shivaji CS')}
-              >
-                <div className="google-avatar">S</div>
-                <div className="google-account-info">
-                  <div className="google-account-name">Shivaji CS</div>
-                  <div className="google-account-email">sivajics49@gmail.com</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="google-account-item"
-                disabled={googleSubmitting}
-                onClick={() => submitGoogleAuth('user@gmail.com', 'Standard User')}
-              >
-                <div className="google-avatar" style={{ background: '#059669' }}>U</div>
-                <div className="google-account-info">
-                  <div className="google-account-name">Standard User</div>
-                  <div className="google-account-email">user@gmail.com</div>
-                </div>
-              </button>
-            </div>
-
-            <div className="google-divider" style={{ margin: '14px 0' }}>
-              <span>Or sign in with another Google account</span>
-            </div>
-
-            {/* Custom Google Account Form */}
-            <form onSubmit={handleCustomGoogleSubmit}>
-              <div className="form-group" style={{ marginBottom: '10px' }}>
-                <label style={{ fontSize: '12px' }}>Google / Gmail Address</label>
-                <input
-                  type="email"
-                  required
-                  placeholder="name@gmail.com"
-                  value={googleEmailInput}
-                  onChange={(e) => setGoogleEmailInput(e.target.value)}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
-                />
-              </div>
-
-              <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label style={{ fontSize: '12px' }}>Full Name (Optional)</label>
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  value={googleNameInput}
-                  onChange={(e) => setGoogleNameInput(e.target.value)}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                <button
-                  type="button"
-                  className="btn-modal-cancel"
-                  onClick={() => setShowGoogleModal(false)}
-                  disabled={googleSubmitting}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn-modal-google"
-                  disabled={googleSubmitting || !googleEmailInput.trim()}
-                >
-                  {googleSubmitting ? 'Signing in...' : 'Sign In'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

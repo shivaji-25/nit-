@@ -324,31 +324,43 @@ exports.register = async (req, res) => {
 // @access  Public
 exports.googleAuth = async (req, res) => {
   try {
-    let { email, name, googleId, picture, credential } = req.body;
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google credential ID token is required.',
+      });
+    }
+
+    let email, name, googleId, picture;
 
     // Verify token using google-auth-library OAuth2Client
-    if (credential) {
-      try {
-        const ticket = await googleClient.verifyIdToken({
-          idToken: credential,
-          audience: process.env.GOOGLE_CLIENT_ID,
+    try {
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      if (payload) {
+        email = payload.email;
+        name = payload.name;
+        googleId = payload.sub;
+        picture = payload.picture;
+      }
+    } catch (verifyErr) {
+      const decodedGoogle = jwt.decode(credential);
+      if (decodedGoogle && decodedGoogle.email) {
+        email = decodedGoogle.email;
+        name = decodedGoogle.name;
+        googleId = decodedGoogle.sub;
+        picture = decodedGoogle.picture;
+      } else {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid Google credential token',
+          error: verifyErr.message,
         });
-        const payload = ticket.getPayload();
-        if (payload) {
-          email = payload.email;
-          name = payload.name;
-          googleId = payload.sub;
-          picture = payload.picture;
-        }
-      } catch (verifyErr) {
-        // Fallback for decoding token in testing / development environments
-        const decodedGoogle = jwt.decode(credential);
-        if (decodedGoogle && decodedGoogle.email) {
-          email = decodedGoogle.email;
-          name = decodedGoogle.name;
-          googleId = decodedGoogle.sub;
-          picture = decodedGoogle.picture;
-        }
       }
     }
 
