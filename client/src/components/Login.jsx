@@ -1,86 +1,34 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, User, Key, Lock, CheckCircle2, Factory, Smartphone, ClipboardCheck, BarChart3, Briefcase } from 'lucide-react';
+import { User, Lock, Factory } from 'lucide-react';
 
 export const Login = () => {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const testCredentials = [
-    {
-      role: 'Admin',
-      roleKey: 'admin',
-      name: 'Factory Admin',
-      email: 'admin@factory.com',
-      password: 'adminPassword123',
-      desc: 'Verify orders, GST Invoices, Dispatch, Payments',
-      icon: Shield,
-      badgeColor: 'bg-indigo-100 text-indigo-700 border-indigo-300',
-    },
-    {
-      role: 'Salesman',
-      roleKey: 'salesman',
-      name: 'Salesman A (Tamil Nadu)',
-      email: 'salesman@factory.com',
-      password: 'salesPassword123',
-      desc: 'Mobile-first field ordering & status tracking',
-      icon: Smartphone,
-      badgeColor: 'bg-emerald-100 text-emerald-700 border-emerald-300',
-    },
-    {
-      role: 'Production',
-      roleKey: 'production',
-      name: 'Floor Supervisor',
-      email: 'production@factory.com',
-      password: 'prodPassword123',
-      desc: 'BOM recipe batches, RM purchases, wastage & yield',
-      icon: Factory,
-      badgeColor: 'bg-amber-100 text-amber-700 border-amber-300',
-    },
-    {
-      role: 'Auditor',
-      roleKey: 'auditor',
-      name: 'External Auditor',
-      email: 'auditor@factory.com',
-      password: 'auditPassword123',
-      desc: 'Read-only Stock Ledger, Sales Register, GST report',
-      icon: ClipboardCheck,
-      badgeColor: 'bg-purple-100 text-purple-700 border-purple-300',
-    },
-    {
-      role: 'Owner',
-      roleKey: 'owner',
-      name: 'Factory Owner',
-      email: 'owner@factory.com',
-      password: 'ownerPassword123',
-      desc: 'Cost/packet, variance alerts, cash dues, overview',
-      icon: Briefcase,
-      badgeColor: 'bg-rose-100 text-rose-700 border-rose-300',
-    },
-  ];
-
   const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
+    e.preventDefault();
     setError('');
     setSubmitting(true);
     const result = await login(email, password);
     setSubmitting(false);
-    if (!result.success) {
-      setError(result.message);
-    }
-  };
 
-  const handleTestLogin = async (cred) => {
-    setEmail(cred.email);
-    setPassword(cred.password);
-    setError('');
-    setSubmitting(true);
-    const result = await login(cred.email, cred.password);
-    setSubmitting(false);
-    if (!result.success) {
+    if (result.success) {
+      const storedUser = JSON.parse(localStorage.getItem('food_mfg_user') || '{}');
+      const role = storedUser.role;
+      // Navigate to separated role-specific route
+      if (role === 'admin') navigate('/admin');
+      else if (role === 'salesman') navigate('/salesman');
+      else if (role === 'production') navigate('/production');
+      else if (role === 'auditor') navigate('/auditor');
+      else if (role === 'owner') navigate('/owner');
+      else navigate('/');
+    } else {
       setError(result.message);
     }
   };
@@ -94,8 +42,8 @@ export const Login = () => {
             <Factory size={32} color="#4f46e5" />
           </div>
           <h2>Order-to-Audit System</h2>
-          <p className="subtitle">Small Food Manufacturer Prototype • NIT Trichy 2026</p>
-          <div className="srs-tag">SRS §3.1 Authentication & Role-Based Access</div>
+          <p className="subtitle">Small Food Manufacturer Prototype • NIT Tiruchirappalli</p>
+          <div className="srs-tag">Role-Based Access Control (SRS §3.1)</div>
         </div>
 
         {/* Error Alert */}
@@ -139,37 +87,6 @@ export const Login = () => {
             {submitting ? 'Authenticating...' : 'Sign In'}
           </button>
         </form>
-
-        {/* Evaluation Quick-Logins (FR-1.5) */}
-        <div className="test-logins-section">
-          <div className="divider-text">
-            <span>Evaluation Panel 1-Click Test Logins (FR-1.5)</span>
-          </div>
-
-          <div className="test-buttons-grid">
-            {testCredentials.map((cred) => {
-              const IconComp = cred.icon;
-              return (
-                <button
-                  key={cred.roleKey}
-                  type="button"
-                  className="test-role-btn"
-                  onClick={() => handleTestLogin(cred)}
-                >
-                  <div className="test-role-header">
-                    <span className="role-pill">
-                      <IconComp size={14} />
-                      {cred.role}
-                    </span>
-                    <span className="click-label">Click to Login</span>
-                  </div>
-                  <div className="test-role-email">{cred.email}</div>
-                  <div className="test-role-desc">{cred.desc}</div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </div>
   );

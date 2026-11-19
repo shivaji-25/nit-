@@ -347,75 +347,164 @@ body {
   cursor: not-allowed;
 }
 
-/* 1-Click Evaluation Logins */
-.test-logins-section {
-  margin-top: 24px;
-  border-top: 1px dashed var(--border-color);
-  padding-top: 20px;
+/* Portal Layouts & Headers */
+.portal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.divider-text {
-  text-align: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: #475569;
-  margin-bottom: 14px;
-}
-
-.test-buttons-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.test-role-btn {
-  background: #f8fafc;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 10px 12px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.test-role-btn:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  transform: translateY(-1px);
-}
-
-.test-role-header {
+.portal-header {
+  border-radius: 12px;
+  padding: 22px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  background: white;
 }
 
-.role-pill {
+.portal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.portal-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.portal-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.portal-header p {
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.url-indicator code {
+  background: #f1f5f9;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  font-weight: 600;
+}
+
+.admin-theme { border-left: 6px solid #4f46e5; }
+.salesman-theme { border-left: 6px solid #059669; }
+.prod-theme { border-left: 6px solid #d97706; }
+.audit-theme { border-left: 6px solid #7c3aed; }
+.owner-theme { border-left: 6px solid #e11d48; }
+
+/* Portal Tabs */
+.portal-tabs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.portal-tab {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
+  gap: 8px;
+  background: white;
+  border: 1px solid var(--border-color);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.portal-tab:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.portal-tab.active {
+  background: #1e1b4b;
+  color: white;
+  border-color: #1e1b4b;
+}
+
+.portal-intro-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.intro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 700;
   color: #1e293b;
+  margin-bottom: 8px;
 }
 
-.click-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--primary);
+.portal-intro-card p {
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.6;
 }
 
-.test-role-email {
-  font-size: 12.5px;
-  color: #334155;
-  font-family: monospace;
+/* 403 Unauthorized View */
+.unauthorized-container {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
-.test-role-desc {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  margin-top: 2px;
+.unauthorized-card {
+  background: white;
+  border: 1px solid #fecaca;
+  box-shadow: var(--shadow-lg);
+  border-radius: 14px;
+  padding: 36px;
+  max-width: 480px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.unauthorized-card h2 {
+  font-size: 22px;
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.unauthorized-card p {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.unauthorized-actions {
+  margin-top: 8px;
 }
 
 /* Dashboard Component Styles */
