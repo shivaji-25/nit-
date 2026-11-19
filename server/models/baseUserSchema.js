@@ -9,6 +9,11 @@ const createBaseUserSchema = (defaultRole = 'user') => {
         required: [true, 'Please provide a name'],
         trim: true,
       },
+      lastname: {
+        type: String,
+        trim: true,
+        default: '',
+      },
       username: {
         type: String,
         required: [true, 'Please provide a username'],

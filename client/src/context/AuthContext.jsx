@@ -63,6 +63,50 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const registerUser = async (formData) => {
+    try {
+      const res = await fetch('http://localhost:5000/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('food_mfg_token', data.token);
+      localStorage.setItem('food_mfg_user', JSON.stringify(data.user));
+      return { success: true, user: data.user, message: data.message };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  };
+
+  const loginWithGoogle = async (googleProfile) => {
+    try {
+      const res = await fetch('http://localhost:5000/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(googleProfile),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Google authentication failed');
+      }
+
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('food_mfg_token', data.token);
+      localStorage.setItem('food_mfg_user', JSON.stringify(data.user));
+      return { success: true, user: data.user };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -79,6 +123,8 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: !!token && !!user,
         role: user?.role || null,
         login,
+        registerUser,
+        loginWithGoogle,
         logout,
       }}
     >
