@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LoginHeroBanner } from './LoginHeroBanner';
 import { WatercolorBackdrop } from './WatercolorBackdrop';
@@ -42,8 +43,17 @@ const roleMeta = {
   },
 };
 
+const demoCredentials = {
+  admin: { username: 'admin', password: 'adminPassword123' },
+  salesman: { username: 'salesman', password: 'salesPassword123' },
+  production: { username: 'production', password: 'prodPassword123' },
+  auditor: { username: 'auditor', password: 'auditPassword123' },
+  owner: { username: 'owner', password: 'ownerPassword123' },
+};
+
 export const RoleLogin = ({ targetRole }) => {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const meta = roleMeta[targetRole] || {
     title: `${targetRole.toUpperCase()} Portal`,
     color: '#6366f1',
@@ -58,6 +68,15 @@ export const RoleLogin = ({ targetRole }) => {
   const [submitting, setSubmitting] = useState(false);
   const [forgotMsg, setForgotMsg] = useState('');
 
+  const handleFillDemo = () => {
+    const creds = demoCredentials[targetRole];
+    if (creds) {
+      setUsername(creds.username);
+      setPassword(creds.password);
+      setError('');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -67,7 +86,9 @@ export const RoleLogin = ({ targetRole }) => {
     const result = await login(username, password, targetRole);
     setSubmitting(false);
 
-    if (!result.success) {
+    if (result.success && result.user) {
+      navigate(`/${targetRole}`);
+    } else {
       setError(result.message);
     }
   };
@@ -145,6 +166,14 @@ export const RoleLogin = ({ targetRole }) => {
               </div>
 
               <div className="untitled-meta-row">
+                <button
+                  type="button"
+                  className="untitled-demo-chip"
+                  onClick={handleFillDemo}
+                  title={`Auto-fill test credentials for ${targetRole}`}
+                >
+                  Fill {targetRole} demo
+                </button>
                 <button
                   type="button"
                   className="untitled-link-subtle"

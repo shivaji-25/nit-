@@ -29,8 +29,9 @@ const roleDisplayNames = {
 // @access  Public
 exports.login = async (req, res) => {
   try {
-    const identifier = req.body.username || req.body.email;
-    const { password, requiredRole } = req.body;
+    const identifier = req.body.username || req.body.email || req.body.identifier;
+    const { password } = req.body;
+    const requiredRole = req.body.requiredRole || req.body.role;
 
     // Validate inputs
     if (!identifier || !password) {

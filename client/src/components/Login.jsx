@@ -193,6 +193,18 @@ export const Login = () => {
                   <div className="untitled-meta-row">
                     <button
                       type="button"
+                      className="untitled-demo-chip"
+                      onClick={() => {
+                        setUsername('user');
+                        setPassword('userPassword123');
+                        setError('');
+                      }}
+                      title="Auto-fill test user credentials"
+                    >
+                      Fill user demo
+                    </button>
+                    <button
+                      type="button"
                       className="untitled-link-subtle"
                       onClick={() => {
                         setMode('forgot');
