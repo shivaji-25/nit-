@@ -1070,7 +1070,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 40px;
+  padding: 40px;
   background: #ffffff;
   min-height: 100vh;
 }
@@ -1354,11 +1354,11 @@ body {
    ========================================================== */
 
 .auth-hero-panel {
-  flex: 1.1;
+  flex: 1.15;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px;
+  padding: 40px;
   position: relative;
   overflow: hidden;
   min-height: 100vh;
@@ -1391,15 +1391,15 @@ body {
 /* Frosted Glass Showcase Card */
 .auth-hero-glass-card {
   position: relative;
-  max-width: 480px;
+  max-width: 500px;
   width: 100%;
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.13);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1.5px solid rgba(255, 255, 255, 0.28);
-  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.45);
-  padding: 42px 36px 36px;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.32), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  padding: 28px 24px 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1413,7 +1413,7 @@ body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .flow-live-indicator {
@@ -1451,115 +1451,128 @@ body {
 .pipeline-nav-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 4px;
   width: 100%;
-  margin-bottom: 16px;
-  background: rgba(0, 0, 0, 0.15);
+  margin-bottom: 14px;
+  background: rgba(0, 0, 0, 0.2);
   padding: 4px;
   border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .pipeline-tab-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   background: transparent;
   border: none;
   border-radius: 8px;
-  padding: 8px 6px;
-  color: rgba(255, 255, 255, 0.7);
+  padding: 7px 4px;
+  color: rgba(255, 255, 255, 0.75);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pipeline-tab-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pipeline-tab-btn:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .pipeline-tab-btn.active {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.24);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 /* Stage Card */
 .pipeline-stage-card {
   width: 100%;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(0, 0, 0, 0.22);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.22);
   animation: stageFadeIn 0.35s ease-out;
 }
 
 .stage-top-row {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 18px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .stage-icon-circle {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.32);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .stage-title-group {
   flex: 1;
+  min-width: 0;
 }
 
 .stage-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stage-desc {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.45;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
 }
 
 /* Metrics Grid */
 .stage-metrics-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
 .metric-box {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9px;
+  padding: 8px 12px;
 }
 
 .metric-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .metric-label {
@@ -1572,7 +1585,7 @@ body {
 
 .metric-progress-bg {
   width: 100%;
-  height: 6px;
+  height: 5px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 999px;
   overflow: hidden;
@@ -1589,9 +1602,9 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 7px 12px;
+  background: rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(34, 197, 94, 0.32);
   border-radius: 8px;
   color: #86efac;
   font-size: 11px;
@@ -1603,21 +1616,32 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 .stat-pill {
+  flex: 1 1 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 5px;
   background: rgba(0, 0, 0, 0.22);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
-  padding: 5px 12px;
-  font-size: 11px;
+  padding: 5px 8px;
+  font-size: 10.5px;
   color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-pill span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stat-pill strong {
@@ -1639,9 +1663,10 @@ body {
 .auth-carousel-dots {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   width: 100%;
-  margin-top: 22px;
+  margin-top: 16px;
 }
 
 .carousel-dot {
