@@ -5,7 +5,6 @@ import { Lock, User, Shield, Smartphone, Factory, ClipboardCheck, Briefcase } fr
 const roleMeta = {
   admin: {
     title: 'Admin Login',
-    sub: 'Admin login only',
     icon: Shield,
     color: '#4f46e5',
     themeClass: 'admin-theme',
@@ -13,7 +12,6 @@ const roleMeta = {
   },
   salesman: {
     title: 'Salesman Login',
-    sub: 'Salesman login only',
     icon: Smartphone,
     color: '#059669',
     themeClass: 'salesman-theme',
@@ -21,7 +19,6 @@ const roleMeta = {
   },
   production: {
     title: 'Production Login',
-    sub: 'Production login only',
     icon: Factory,
     color: '#d97706',
     themeClass: 'prod-theme',
@@ -29,7 +26,6 @@ const roleMeta = {
   },
   auditor: {
     title: 'Auditor & Accounts Login',
-    sub: 'Auditor & Accounts login only',
     icon: ClipboardCheck,
     color: '#7c3aed',
     themeClass: 'audit-theme',
@@ -37,7 +33,6 @@ const roleMeta = {
   },
   owner: {
     title: 'Owner Login',
-    sub: 'Owner login only',
     icon: Briefcase,
     color: '#e11d48',
     themeClass: 'owner-theme',
@@ -78,9 +73,6 @@ export const RoleLogin = ({ targetRole }) => {
             <RoleIcon size={32} color={meta.color} />
           </div>
           <h2>{meta.title}</h2>
-          <p className="subtitle" style={{ fontWeight: 600, color: meta.color }}>
-            {meta.sub}
-          </p>
         </div>
 
         {/* Error Alert */}

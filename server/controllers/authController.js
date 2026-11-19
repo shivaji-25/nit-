@@ -321,7 +321,18 @@ exports.register = async (req, res) => {
 // @access  Public
 exports.googleAuth = async (req, res) => {
   try {
-    const { email, name, googleId } = req.body;
+    let { email, name, googleId, credential } = req.body;
+
+    // Support decoding Google Identity Services credential token
+    if (credential) {
+      const decodedGoogle = jwt.decode(credential);
+      if (decodedGoogle && decodedGoogle.email) {
+        email = decodedGoogle.email;
+        name = decodedGoogle.name;
+        googleId = decodedGoogle.sub;
+      }
+    }
+
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -330,21 +341,52 @@ exports.googleAuth = async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+
+    // Check if account exists in other role folders (admin_folder, salesman_folder, etc.)
+    for (const item of allRoleModels) {
+      if (item.role !== 'user') {
+        const existsElsewhere = await item.model.findOne({ email: cleanEmail });
+        if (existsElsewhere) {
+          const expectedName = roleDisplayNames[item.role] || item.role;
+          return res.status(403).json({
+            success: false,
+            message: `Access Denied: This Google account is registered as ${expectedName}. Google access is restricted to User accounts only.`,
+          });
+        }
+      }
+    }
+
     let user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
-      const generatedUsername = cleanEmail.split('@')[0].toLowerCase() + `_${Math.floor(100 + Math.random() * 900)}`;
-      const randomPassword = Math.random().toString(36).slice(-10) + 'A1!';
-      const nameParts = (name || 'Google User').split(' ');
+      const baseName = (name || cleanEmail.split('@')[0]).trim();
+      const nameParts = baseName.split(' ');
+      const firstName = nameParts[0] || 'Google';
+      const lastName = nameParts.slice(1).join(' ') || 'User';
+
+      let userUsername = cleanEmail.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+      const existingUsername = await User.findOne({ username: userUsername });
+      if (existingUsername) {
+        userUsername = `${userUsername}_${Math.floor(100 + Math.random() * 900)}`;
+      }
+
+      const randomPassword = Math.random().toString(36).slice(-10) + 'A1!@';
 
       user = await User.create({
-        name: nameParts[0] || 'Google',
-        lastname: nameParts.slice(1).join(' ') || 'User',
-        username: generatedUsername,
+        name: firstName,
+        lastname: lastName,
+        username: userUsername,
         email: cleanEmail,
         password: randomPassword,
-        phone: '0000000000',
+        phone: '9876500000',
         role: 'user',
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: 'User account is deactivated. Contact factory admin.',
       });
     }
 
