@@ -38,9 +38,9 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password, requiredRole = null) => {
+  const login = async (username, password, requiredRole = null) => {
     try {
-      const payload = { email, password };
+      const payload = { username, password };
       if (requiredRole) payload.requiredRole = requiredRole;
 
       const res = await fetch('http://localhost:5000/auth/login', {

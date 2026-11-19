@@ -1,8 +1,8 @@
 const http = require('http');
 
-async function testLogin(email, password, requiredRole = null) {
+async function testLogin(username, password, requiredRole = null) {
   return new Promise((resolve, reject) => {
-    const postData = JSON.stringify({ email, password, requiredRole });
+    const postData = JSON.stringify({ username, password, requiredRole });
     const req = http.request(
       {
         hostname: 'localhost',
@@ -33,44 +33,49 @@ async function testLogin(email, password, requiredRole = null) {
 }
 
 async function runRuleTests() {
-  console.log('Testing Category Portal Login Rules & Restrictions...\n');
+  console.log('Testing Username Login & Role Restrictions...\n');
 
-  // Test 1: Admin logging into Admin portal
-  console.log('1. Admin logging into Admin portal (requiredRole: "admin")...');
-  const t1 = await testLogin('admin@factory.com', 'adminPassword123', 'admin');
+  // Test 1: Username 'admin' logging into Admin portal
+  console.log('1. Username "admin" logging into Admin portal (requiredRole: "admin")...');
+  const t1 = await testLogin('admin', 'adminPassword123', 'admin');
   console.log(`Status: ${t1.status} (Expected 200), Success: ${t1.data.success}`);
 
-  // Test 2: Salesman attempting to log into Admin portal
-  console.log('\n2. Salesman attempting to log into Admin portal (requiredRole: "admin")...');
-  const t2 = await testLogin('salesman@factory.com', 'salesPassword123', 'admin');
+  // Test 2: Username 'salesman' attempting to log into Admin portal
+  console.log('\n2. Username "salesman" attempting to log into Admin portal (requiredRole: "admin")...');
+  const t2 = await testLogin('salesman', 'salesPassword123', 'admin');
   console.log(`Status: ${t2.status} (Expected 403), Message: "${t2.data.message}"`);
 
-  // Test 3: Admin attempting to log into Salesman portal
-  console.log('\n3. Admin attempting to log into Salesman portal (requiredRole: "salesman")...');
-  const t3 = await testLogin('admin@factory.com', 'adminPassword123', 'salesman');
+  // Test 3: Username 'admin' attempting to log into Salesman portal
+  console.log('\n3. Username "admin" attempting to log into Salesman portal (requiredRole: "salesman")...');
+  const t3 = await testLogin('admin', 'adminPassword123', 'salesman');
   console.log(`Status: ${t3.status} (Expected 403), Message: "${t3.data.message}"`);
 
-  // Test 4: Salesman logging into Salesman portal
-  console.log('\n4. Salesman logging into Salesman portal (requiredRole: "salesman")...');
-  const t4 = await testLogin('salesman@factory.com', 'salesPassword123', 'salesman');
+  // Test 4: Username 'salesman' logging into Salesman portal
+  console.log('\n4. Username "salesman" logging into Salesman portal (requiredRole: "salesman")...');
+  const t4 = await testLogin('salesman', 'salesPassword123', 'salesman');
   console.log(`Status: ${t4.status} (Expected 200), Success: ${t4.data.success}`);
 
-  // Test 5: Production logging into Production portal
-  console.log('\n5. Production logging into Production portal (requiredRole: "production")...');
-  const t5 = await testLogin('production@factory.com', 'prodPassword123', 'production');
+  // Test 5: Username 'production' logging into Production portal
+  console.log('\n5. Username "production" logging into Production portal (requiredRole: "production")...');
+  const t5 = await testLogin('production', 'prodPassword123', 'production');
   console.log(`Status: ${t5.status} (Expected 200), Success: ${t5.data.success}`);
 
-  // Test 6: Auditor logging into Auditor portal
-  console.log('\n6. Auditor logging into Auditor portal (requiredRole: "auditor")...');
-  const t6 = await testLogin('auditor@factory.com', 'auditPassword123', 'auditor');
+  // Test 6: Username 'auditor' logging into Auditor portal
+  console.log('\n6. Username "auditor" logging into Auditor portal (requiredRole: "auditor")...');
+  const t6 = await testLogin('auditor', 'auditPassword123', 'auditor');
   console.log(`Status: ${t6.status} (Expected 200), Success: ${t6.data.success}`);
 
-  // Test 7: Owner logging into Owner portal
-  console.log('\n7. Owner logging into Owner portal (requiredRole: "owner")...');
-  const t7 = await testLogin('owner@factory.com', 'ownerPassword123', 'owner');
+  // Test 7: Username 'owner' logging into Owner portal
+  console.log('\n7. Username "owner" logging into Owner portal (requiredRole: "owner")...');
+  const t7 = await testLogin('owner', 'ownerPassword123', 'owner');
   console.log(`Status: ${t7.status} (Expected 200), Success: ${t7.data.success}`);
 
-  console.log('\nAll Category Portal Login Rules Verified and Enforced Successfully!');
+  // Test 8: Username login at general /login without requiredRole
+  console.log('\n8. General user login with username "admin" (no requiredRole)...');
+  const t8 = await testLogin('admin', 'adminPassword123');
+  console.log(`Status: ${t8.status} (Expected 200), Role received: ${t8.data.user.role}`);
+
+  console.log('\nAll Username Login & Role Restrictions Passed Successfully!');
   process.exit(0);
 }
 

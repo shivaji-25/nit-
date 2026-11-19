@@ -9,7 +9,7 @@ const roleMeta = {
     icon: Shield,
     color: '#4f46e5',
     themeClass: 'admin-theme',
-    placeholder: 'admin@factory.com',
+    placeholder: 'admin',
   },
   salesman: {
     title: 'Salesman Login',
@@ -17,7 +17,7 @@ const roleMeta = {
     icon: Smartphone,
     color: '#059669',
     themeClass: 'salesman-theme',
-    placeholder: 'salesman@factory.com',
+    placeholder: 'salesman',
   },
   production: {
     title: 'Production Login',
@@ -25,7 +25,7 @@ const roleMeta = {
     icon: Factory,
     color: '#d97706',
     themeClass: 'prod-theme',
-    placeholder: 'production@factory.com',
+    placeholder: 'production',
   },
   auditor: {
     title: 'Auditor & Accounts Login',
@@ -33,7 +33,7 @@ const roleMeta = {
     icon: ClipboardCheck,
     color: '#7c3aed',
     themeClass: 'audit-theme',
-    placeholder: 'auditor@factory.com',
+    placeholder: 'auditor',
   },
   owner: {
     title: 'Owner Login',
@@ -41,7 +41,7 @@ const roleMeta = {
     icon: Briefcase,
     color: '#e11d48',
     themeClass: 'owner-theme',
-    placeholder: 'owner@factory.com',
+    placeholder: 'owner',
   },
 };
 
@@ -50,7 +50,7 @@ export const RoleLogin = ({ targetRole }) => {
   const RoleIcon = meta.icon;
   const { login } = useAuth();
 
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -61,7 +61,7 @@ export const RoleLogin = ({ targetRole }) => {
     setSubmitting(true);
 
     // Enforce targetRole rule on server
-    const result = await login(email, password, targetRole);
+    const result = await login(username, password, targetRole);
     setSubmitting(false);
 
     if (!result.success) {
@@ -93,15 +93,15 @@ export const RoleLogin = ({ targetRole }) => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>Email Address</label>
+            <label>Username</label>
             <div className="input-wrapper">
               <User size={18} className="input-icon" />
               <input
-                type="email"
+                type="text"
                 required
                 placeholder={meta.placeholder}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
           </div>

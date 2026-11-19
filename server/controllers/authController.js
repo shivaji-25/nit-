@@ -17,22 +17,27 @@ const generateToken = (id) => {
 // @access  Public
 exports.login = async (req, res) => {
   try {
-    const { email, password, requiredRole } = req.body;
+    const identifier = req.body.username || req.body.email;
+    const { password, requiredRole } = req.body;
 
     // Validate inputs
-    if (!email || !password) {
+    if (!identifier || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide both email and password',
+        message: 'Please provide both username and password',
       });
     }
 
-    // Find user by email and include password field
-    const user = await User.findOne({ email }).select('+password');
+    const cleanIdentifier = identifier.trim().toLowerCase();
+
+    // Find user by username or email and include password field
+    const user = await User.findOne({
+      $or: [{ username: cleanIdentifier }, { email: cleanIdentifier }],
+    }).select('+password');
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password',
+        message: 'Invalid username or password',
       });
     }
 

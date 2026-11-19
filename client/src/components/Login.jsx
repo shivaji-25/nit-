@@ -6,7 +6,7 @@ import { Factory, Lock, User } from 'lucide-react';
 export const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -17,7 +17,7 @@ export const Login = () => {
     setSubmitting(true);
 
     // Standard user login (no requiredRole restriction)
-    const result = await login(email, password);
+    const result = await login(username, password);
     setSubmitting(false);
 
     if (result.success && result.user) {
@@ -55,15 +55,15 @@ export const Login = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>Email Address</label>
+            <label>Username</label>
             <div className="input-wrapper">
               <User size={18} className="input-icon" />
               <input
-                type="email"
+                type="text"
                 required
-                placeholder="user@factory.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
           </div>

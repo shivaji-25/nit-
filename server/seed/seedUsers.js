@@ -18,6 +18,7 @@ const seedUsers = async () => {
     const defaultUsers = [
       {
         name: 'Factory Admin',
+        username: 'admin',
         email: 'admin@factory.com',
         password: 'adminPassword123',
         role: 'admin',
@@ -25,6 +26,7 @@ const seedUsers = async () => {
       },
       {
         name: 'Salesman A (Tamil Nadu)',
+        username: 'salesman',
         email: 'salesman@factory.com',
         password: 'salesPassword123',
         role: 'salesman',
@@ -32,6 +34,7 @@ const seedUsers = async () => {
       },
       {
         name: 'Salesman B (Karnataka)',
+        username: 'salesman_b',
         email: 'salesman_b@factory.com',
         password: 'salesPassword123',
         role: 'salesman',
@@ -39,6 +42,7 @@ const seedUsers = async () => {
       },
       {
         name: 'Floor Supervisor',
+        username: 'production',
         email: 'production@factory.com',
         password: 'prodPassword123',
         role: 'production',
@@ -46,6 +50,7 @@ const seedUsers = async () => {
       },
       {
         name: 'External Auditor',
+        username: 'auditor',
         email: 'auditor@factory.com',
         password: 'auditPassword123',
         role: 'auditor',
@@ -53,6 +58,7 @@ const seedUsers = async () => {
       },
       {
         name: 'Factory Owner',
+        username: 'owner',
         email: 'owner@factory.com',
         password: 'ownerPassword123',
         role: 'owner',
@@ -61,12 +67,18 @@ const seedUsers = async () => {
     ];
 
     for (const userData of defaultUsers) {
-      const existing = await User.findOne({ email: userData.email });
+      let existing = await User.findOne({ email: userData.email });
       if (!existing) {
         await User.create(userData);
-        console.log(`Created user: ${userData.email} (${userData.role})`);
+        console.log(`Created user: ${userData.username} / ${userData.email} (${userData.role})`);
       } else {
-        console.log(`User already exists: ${userData.email}`);
+        if (!existing.username) {
+          existing.username = userData.username;
+          await existing.save();
+          console.log(`Updated username for user: ${userData.username}`);
+        } else {
+          console.log(`User already exists: ${existing.username} (${userData.email})`);
+        }
       }
     }
 
