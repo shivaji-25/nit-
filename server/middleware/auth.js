@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { getModelByRole, allRoleModels } = require('../models');
 
 // Protect routes - FR-1.3, FR-1.4
 const protect = async (req, res, next) => {
@@ -25,7 +25,19 @@ const protect = async (req, res, next) => {
       process.env.JWT_SECRET || 'nit_winter_internship_secret_key_2026_super_secure'
     );
 
-    const user = await User.findById(decoded.id);
+    let user = null;
+    if (decoded.role) {
+      const TargetModel = getModelByRole(decoded.role);
+      user = await TargetModel.findById(decoded.id);
+    }
+
+    if (!user) {
+      for (const item of allRoleModels) {
+        user = await item.model.findById(decoded.id);
+        if (user) break;
+      }
+    }
+
     if (!user || !user.isActive) {
       return res.status(401).json({
         success: false,

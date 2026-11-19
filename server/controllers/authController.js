@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { getModelByRole, allRoleModels, User } = require('../models');
 
-// Generate JWT token with expiry
-const generateToken = (id) => {
+// Generate JWT token with expiry and role payload
+const generateToken = (id, role) => {
   return jwt.sign(
-    { id },
+    { id, role },
     process.env.JWT_SECRET || 'nit_winter_internship_secret_key_2026_super_secure',
     {
       expiresIn: process.env.JWT_EXPIRES_IN || '7d',
@@ -12,7 +12,16 @@ const generateToken = (id) => {
   );
 };
 
-// @desc    Login user & return token
+const roleDisplayNames = {
+  admin: 'Admin',
+  salesman: 'Salesman',
+  production: 'Production',
+  auditor: 'Auditor & Accounts',
+  owner: 'Owner',
+  user: 'User',
+};
+
+// @desc    Login user & return token (Enforcing separated collection folders)
 // @route   POST /auth/login
 // @access  Public
 exports.login = async (req, res) => {
@@ -29,16 +38,59 @@ exports.login = async (req, res) => {
     }
 
     const cleanIdentifier = identifier.trim().toLowerCase();
+    let user = null;
+    let foundInRole = null;
 
-    // Find user by username or email and include password field
-    const user = await User.findOne({
-      $or: [{ username: cleanIdentifier }, { email: cleanIdentifier }],
-    }).select('+password');
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid username or password',
-      });
+    if (requiredRole) {
+      const targetRoleKey = requiredRole.toLowerCase();
+      const TargetModel = getModelByRole(targetRoleKey);
+
+      // Search ONLY inside that role's separated collection folder!
+      user = await TargetModel.findOne({
+        $or: [{ username: cleanIdentifier }, { email: cleanIdentifier }],
+      }).select('+password');
+
+      if (!user) {
+        // Check if user exists in another role collection to give clear feedback
+        for (const item of allRoleModels) {
+          if (item.role !== targetRoleKey) {
+            const existsElsewhere = await item.model.findOne({
+              $or: [{ username: cleanIdentifier }, { email: cleanIdentifier }],
+            });
+            if (existsElsewhere) {
+              const expectedName = roleDisplayNames[targetRoleKey] || targetRoleKey;
+              return res.status(403).json({
+                success: false,
+                message: `Access Denied: This link is for ${expectedName} login only.`,
+              });
+            }
+          }
+        }
+
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid username or password',
+        });
+      }
+      foundInRole = targetRoleKey;
+    } else {
+      // General user login - search across role collections
+      for (const item of allRoleModels) {
+        user = await item.model.findOne({
+          $or: [{ username: cleanIdentifier }, { email: cleanIdentifier }],
+        }).select('+password');
+        if (user) {
+          foundInRole = item.role;
+          break;
+        }
+      }
+
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid username or password',
+        });
+      }
     }
 
     // Check if account is active
@@ -54,28 +106,12 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password',
+        message: 'Invalid username or password',
       });
     }
 
-    // Enforce role rule: if login is attempted from a specific category portal link, verify role match
-    if (requiredRole && user.role !== requiredRole.toLowerCase()) {
-      const displayNames = {
-        admin: 'Admin',
-        salesman: 'Salesman',
-        production: 'Production',
-        auditor: 'Auditor & Accounts',
-        owner: 'Owner',
-      };
-      const expected = displayNames[requiredRole.toLowerCase()] || requiredRole;
-      return res.status(403).json({
-        success: false,
-        message: `Access Denied: This link is for ${expected} login only.`,
-      });
-    }
-
-    // Generate token
-    const token = generateToken(user._id);
+    // Generate token with role
+    const token = generateToken(user._id, user.role);
 
     res.status(200).json({
       success: true,
@@ -83,6 +119,7 @@ exports.login = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        username: user.username,
         email: user.email,
         role: user.role,
         phone: user.phone,
@@ -102,12 +139,13 @@ exports.login = async (req, res) => {
 // @access  Private (All authenticated roles)
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = req.user;
     res.status(200).json({
       success: true,
       user: {
         id: user._id,
         name: user.name,
+        username: user.username,
         email: user.email,
         role: user.role,
         phone: user.phone,
@@ -129,38 +167,43 @@ exports.getTestUsers = async (req, res) => {
   const testUsers = [
     {
       role: 'admin',
+      username: 'admin',
       name: 'Factory Admin',
       email: 'admin@factory.com',
       password: 'adminPassword123',
-      description: 'Order verification, invoicing, dispatch, payments & approvals',
+      collection: 'admin_folder',
     },
     {
       role: 'salesman',
+      username: 'salesman',
       name: 'Salesman A (Tamil Nadu)',
       email: 'salesman@factory.com',
       password: 'salesPassword123',
-      description: 'Mobile-first field order placement & customer order tracking',
+      collection: 'salesman_folder',
     },
     {
       role: 'production',
+      username: 'production',
       name: 'Floor Supervisor',
       email: 'production@factory.com',
       password: 'prodPassword123',
-      description: 'Raw material purchases, BOM batches, output & wastage logging',
+      collection: 'production_folder',
     },
     {
       role: 'auditor',
+      username: 'auditor',
       name: 'External Auditor',
       email: 'auditor@factory.com',
       password: 'auditPassword123',
-      description: 'Read-only access to sales register, stock ledger, GST & audit logs',
+      collection: 'auditor_folder',
     },
     {
       role: 'owner',
+      username: 'owner',
       name: 'Factory Owner',
       email: 'owner@factory.com',
       password: 'ownerPassword123',
-      description: 'High-level dashboard, variance alerts, cost per packet & dues',
+      collection: 'owner_folder',
     },
   ];
 
