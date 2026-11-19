@@ -46,10 +46,11 @@ const RoleRedirect = () => {
 };
 
 const AppRoutes = () => {
+  const { user } = useAuth();
   return (
-    <div className="app-layout">
+    <div className={`app-layout ${!user ? 'auth-mode-layout' : ''}`}>
       <Navbar />
-      <main className="main-container">
+      <main className={!user ? 'auth-main-container' : 'main-container'}>
         <Routes>
           {/* User Login Only */}
           <Route path="/login" element={<Login />} />

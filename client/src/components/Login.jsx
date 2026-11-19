@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
-import { Factory, Lock, User, Mail, Phone, UserPlus, LogIn, CheckCircle2, AlertCircle } from 'lucide-react';
+import { BrandEmblem } from './BrandEmblem';
+import { LoginHeroBanner } from './LoginHeroBanner';
+import { ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export const Login = () => {
   const { login, registerUser, loginWithGoogle } = useAuth();
@@ -14,6 +16,7 @@ export const Login = () => {
   // Sign in fields
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
 
   // Register fields: (created name, lastname, gmail, password, phone number) with rules
   const [regName, setRegName] = useState('');
@@ -99,173 +102,200 @@ export const Login = () => {
     }
   };
 
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    setError('Password reset link has been requested. Contact factory administration to reset.');
+  };
+
   return (
-    <div className="login-container">
-      <div className="login-card">
-        {/* Header */}
-        <div className="login-header">
-          <div className="login-logo-circle">
-            <Factory size={32} color="#4f46e5" />
+    <div className="auth-split-wrapper">
+      {/* Left Form Panel */}
+      <div className="auth-form-panel">
+        <div className="auth-form-box">
+          {/* Brand Emblem Logo */}
+          <div className="auth-brand-header">
+            <BrandEmblem size={44} />
+            <h1 className="auth-heading">
+              {mode === 'signin' ? 'Welcome Back !' : 'Create Account'}
+            </h1>
+            <p className="auth-subheading">
+              {mode === 'signin'
+                ? 'Please enter your details'
+                : 'Please enter your details to register as staff user'}
+            </p>
           </div>
-          <h2>{mode === 'signin' ? 'User Login' : 'Create New Account'}</h2>
-        </div>
 
-        {/* Mode Selector Tabs */}
-        <div className="auth-mode-switch">
-          <button
-            type="button"
-            className={`mode-btn ${mode === 'signin' ? 'active' : ''}`}
-            onClick={() => {
-              setMode('signin');
-              setError('');
-            }}
-          >
-            <LogIn size={15} />
-            <span>Sign In</span>
-          </button>
-          <button
-            type="button"
-            className={`mode-btn ${mode === 'register' ? 'active' : ''}`}
-            onClick={() => {
-              setMode('register');
-              setError('');
-            }}
-          >
-            <UserPlus size={15} />
-            <span>New Account</span>
-          </button>
-        </div>
+          {/* Error Message */}
+          {error && (
+            <div className="auth-alert-box error">
+              <AlertCircle size={16} />
+              <span>{error}</span>
+            </div>
+          )}
 
-        {/* Error Alert */}
-        {error && (
-          <div className="error-box">
-            <span>{error}</span>
-          </div>
-        )}
+          {/* Success Message */}
+          {successMsg && (
+            <div className="auth-alert-box success">
+              <CheckCircle2 size={16} />
+              <span>{successMsg}</span>
+            </div>
+          )}
 
-        {/* Success Alert */}
-        {successMsg && (
-          <div className="success-box" style={{ background: '#ecfdf5', color: '#065f46', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', border: '1px solid #a7f3d0', fontSize: '13px' }}>
-            <span>{successMsg}</span>
-          </div>
-        )}
-
-        {/* SIGN IN FORM */}
-        {mode === 'signin' ? (
-          <form onSubmit={handleSignIn} className="login-form">
-            <div className="form-group">
-              <label>Username</label>
-              <div className="input-wrapper">
-                <User size={18} className="input-icon" />
+          {/* SIGN IN FORM */}
+          {mode === 'signin' ? (
+            <form onSubmit={handleSignIn} className="auth-modern-form">
+              <div className="auth-input-group">
+                <label>Email Address</label>
                 <input
                   type="text"
                   required
-                  placeholder="user"
+                  placeholder="Enter your email or username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  className="auth-input-field"
+                  autoComplete="username"
                 />
               </div>
-            </div>
 
-            <div className="form-group">
-              <label>Password</label>
-              <div className="input-wrapper">
-                <Lock size={18} className="input-icon" />
+              <div className="auth-input-group">
+                <label>Password</label>
                 <input
                   type="password"
                   required
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="auth-input-field"
+                  autoComplete="current-password"
                 />
               </div>
-            </div>
 
-            <button type="submit" disabled={submitting} className="btn-primary">
-              {submitting ? 'Verifying...' : 'Sign In'}
-            </button>
+              {/* Remember Me & Forgot Password Row */}
+              <div className="auth-options-row">
+                <label className="auth-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
+                  <span>Remember me</span>
+                </label>
+                <a
+                  href="#forgot"
+                  onClick={handleForgotPassword}
+                  className="auth-forgot-link"
+                >
+                  Forgot Password?
+                </a>
+              </div>
 
-            {/* Google OAuth Access - ONLY on User Login */}
-            <div className="google-divider">
-              <span>OR</span>
-            </div>
+              {/* Primary Action Button */}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="auth-primary-btn"
+              >
+                <span>{submitting ? 'Signing in...' : 'Login'}</span>
+                <ArrowRight size={18} />
+              </button>
 
-            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '6px' }}>
-              <GoogleLogin
-                onSuccess={async (credentialResponse) => {
-                  if (credentialResponse.credential) {
-                    setSubmitting(true);
-                    const result = await loginWithGoogle({ credential: credentialResponse.credential });
-                    setSubmitting(false);
-                    if (result.success) {
-                      navigate('/user');
-                    } else {
-                      setError(result.message);
+              {/* Google OAuth Access - ONLY on User Login */}
+              <div className="auth-divider">
+                <span>OR</span>
+              </div>
+
+              <div className="auth-google-wrapper">
+                <GoogleLogin
+                  onSuccess={async (credentialResponse) => {
+                    if (credentialResponse.credential) {
+                      setSubmitting(true);
+                      const result = await loginWithGoogle({
+                        credential: credentialResponse.credential,
+                      });
+                      setSubmitting(false);
+                      if (result.success) {
+                        navigate('/user');
+                      } else {
+                        setError(result.message);
+                      }
                     }
-                  }
-                }}
-                onError={() => {
-                  setError('Google Login Failed');
-                }}
-                shape="rectangular"
-                theme="outline"
-                size="large"
-                text="continue_with"
-                width="100%"
-              />
-            </div>
-          </form>
-        ) : (
-          /* CREATE NEW ACCOUNT FORM (with rules) */
-          <form onSubmit={handleRegister} className="login-form">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <div className="form-group">
-                <label>First Name</label>
-                <div className="input-wrapper">
-                  <User size={16} className="input-icon" />
+                  }}
+                  onError={() => {
+                    setError('Google Login Failed');
+                  }}
+                  shape="rectangular"
+                  theme="outline"
+                  size="large"
+                  text="continue_with"
+                  width="100%"
+                />
+              </div>
+
+              {/* Terms disclaimer */}
+              <p className="auth-terms-note">
+                By creating an account, you agree to our{' '}
+                <a href="#terms">Terms of Service</a> and{' '}
+                <a href="#privacy">Privacy Policy</a>
+              </p>
+
+              {/* Toggle to Register */}
+              <div className="auth-footer-link">
+                <span>Don't have an account? </span>
+                <button
+                  type="button"
+                  className="auth-link-btn"
+                  onClick={() => {
+                    setMode('register');
+                    setError('');
+                  }}
+                >
+                  Sign Up
+                </button>
+              </div>
+            </form>
+          ) : (
+            /* CREATE NEW ACCOUNT FORM (with rules) */
+            <form onSubmit={handleRegister} className="auth-modern-form">
+              <div className="auth-input-row">
+                <div className="auth-input-group">
+                  <label>First Name</label>
                   <input
                     type="text"
                     required
                     placeholder="John"
                     value={regName}
                     onChange={(e) => setRegName(e.target.value)}
+                    className="auth-input-field"
                   />
                 </div>
-              </div>
 
-              <div className="form-group">
-                <label>Last Name</label>
-                <div className="input-wrapper">
-                  <User size={16} className="input-icon" />
+                <div className="auth-input-group">
+                  <label>Last Name</label>
                   <input
                     type="text"
                     required
                     placeholder="Doe"
                     value={regLastName}
                     onChange={(e) => setRegLastName(e.target.value)}
+                    className="auth-input-field"
                   />
                 </div>
               </div>
-            </div>
 
-            <div className="form-group">
-              <label>Gmail / Email</label>
-              <div className="input-wrapper">
-                <Mail size={16} className="input-icon" />
+              <div className="auth-input-group">
+                <label>Gmail / Email</label>
                 <input
                   type="email"
                   required
                   placeholder="name@gmail.com"
                   value={regGmail}
                   onChange={(e) => setRegGmail(e.target.value)}
+                  className="auth-input-field"
                 />
               </div>
-            </div>
 
-            <div className="form-group">
-              <label>Phone Number (10 digits)</label>
-              <div className="input-wrapper">
-                <Phone size={16} className="input-icon" />
+              <div className="auth-input-group">
+                <label>Phone Number (10 digits)</label>
                 <input
                   type="tel"
                   required
@@ -273,30 +303,60 @@ export const Login = () => {
                   placeholder="9876543210"
                   value={regPhone}
                   onChange={(e) => setRegPhone(e.target.value.replace(/[^0-9]/g, ''))}
+                  className="auth-input-field"
                 />
               </div>
-            </div>
 
-            <div className="form-group">
-              <label>Password (min 6 chars)</label>
-              <div className="input-wrapper">
-                <Lock size={16} className="input-icon" />
+              <div className="auth-input-group">
+                <label>Password (min 6 characters)</label>
                 <input
                   type="password"
                   required
                   placeholder="••••••••••••"
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
+                  className="auth-input-field"
                 />
               </div>
-            </div>
 
-            <button type="submit" disabled={submitting} className="btn-primary">
-              {submitting ? 'Creating Account...' : 'Create Account'}
-            </button>
-          </form>
-        )}
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="auth-primary-btn"
+              >
+                <span>{submitting ? 'Creating Account...' : 'Sign Up'}</span>
+                <ArrowRight size={18} />
+              </button>
+
+              {/* Terms disclaimer */}
+              <p className="auth-terms-note">
+                By creating an account, you agree to our{' '}
+                <a href="#terms">Terms of Service</a> and{' '}
+                <a href="#privacy">Privacy Policy</a>
+              </p>
+
+              {/* Toggle to Sign In */}
+              <div className="auth-footer-link">
+                <span>Already have an account? </span>
+                <button
+                  type="button"
+                  className="auth-link-btn"
+                  onClick={() => {
+                    setMode('signin');
+                    setError('');
+                  }}
+                >
+                  Log In
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
+
+      {/* Right Hero Banner Panel with Pure Lightweight Animated Card */}
+      <LoginHeroBanner role="user" />
     </div>
   );
 };

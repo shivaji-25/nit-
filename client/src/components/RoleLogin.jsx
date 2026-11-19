@@ -1,52 +1,55 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, User, Shield, Smartphone, Factory, ClipboardCheck, Briefcase } from 'lucide-react';
+import { BrandEmblem } from './BrandEmblem';
+import { LoginHeroBanner } from './LoginHeroBanner';
+import { ArrowRight, AlertCircle, Shield, Smartphone, Factory, ClipboardCheck, Briefcase } from 'lucide-react';
 
 const roleMeta = {
   admin: {
-    title: 'Admin Login',
+    title: 'Admin Portal',
+    roleTag: 'Administrator',
     icon: Shield,
     color: '#4f46e5',
-    themeClass: 'admin-theme',
     placeholder: 'admin',
   },
   salesman: {
-    title: 'Salesman Login',
+    title: 'Salesman Portal',
+    roleTag: 'Field Sales',
     icon: Smartphone,
     color: '#059669',
-    themeClass: 'salesman-theme',
     placeholder: 'salesman',
   },
   production: {
-    title: 'Production Login',
+    title: 'Production Portal',
+    roleTag: 'Floor Supervisor',
     icon: Factory,
     color: '#d97706',
-    themeClass: 'prod-theme',
     placeholder: 'production',
   },
   auditor: {
-    title: 'Auditor & Accounts Login',
+    title: 'Auditor & Accounts',
+    roleTag: 'Auditor & Accounts',
     icon: ClipboardCheck,
     color: '#7c3aed',
-    themeClass: 'audit-theme',
     placeholder: 'auditor',
   },
   owner: {
-    title: 'Owner Login',
+    title: 'Owner Portal',
+    roleTag: 'Factory Owner',
     icon: Briefcase,
     color: '#e11d48',
-    themeClass: 'owner-theme',
     placeholder: 'owner',
   },
 };
 
 export const RoleLogin = ({ targetRole }) => {
   const meta = roleMeta[targetRole] || roleMeta.admin;
-  const RoleIcon = meta.icon;
   const { login } = useAuth();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -64,64 +67,109 @@ export const RoleLogin = ({ targetRole }) => {
     }
   };
 
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    setError('Contact the factory IT administrator to reset role access credentials.');
+  };
+
   return (
-    <div className="login-container">
-      <div className={`login-card ${meta.themeClass}`}>
-        {/* Header */}
-        <div className="login-header">
-          <div className="login-logo-circle" style={{ background: `${meta.color}15` }}>
-            <RoleIcon size={32} color={meta.color} />
+    <div className="auth-split-wrapper">
+      {/* Left Form Panel */}
+      <div className="auth-form-panel">
+        <div className="auth-form-box">
+          {/* Brand Emblem Logo */}
+          <div className="auth-brand-header">
+            <BrandEmblem size={44} />
+            <h1 className="auth-heading">Welcome Back !</h1>
+            <p className="auth-subheading">
+              Please enter your {meta.roleTag} credentials to sign in
+            </p>
           </div>
-          <h2>{meta.title}</h2>
-        </div>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="error-box">
-            <span>{error}</span>
-          </div>
-        )}
+          {/* Error Alert */}
+          {error && (
+            <div className="auth-alert-box error">
+              <AlertCircle size={16} />
+              <span>{error}</span>
+            </div>
+          )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label>Username</label>
-            <div className="input-wrapper">
-              <User size={18} className="input-icon" />
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="auth-modern-form">
+            <div className="auth-input-group">
+              <label>Username</label>
               <input
                 type="text"
                 required
                 placeholder={meta.placeholder}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                className="auth-input-field"
+                autoComplete="username"
               />
             </div>
-          </div>
 
-          <div className="form-group">
-            <label>Password</label>
-            <div className="input-wrapper">
-              <Lock size={18} className="input-icon" />
+            <div className="auth-input-group">
+              <label>Password</label>
               <input
                 type="password"
                 required
                 placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="auth-input-field"
+                autoComplete="current-password"
               />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="btn-primary"
-            style={{ background: meta.color }}
-          >
-            {submitting ? 'Verifying...' : `Sign In`}
-          </button>
-        </form>
+            {/* Remember Me & Forgot Password Row */}
+            <div className="auth-options-row">
+              <label className="auth-checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                <span>Remember me</span>
+              </label>
+              <a
+                href="#forgot"
+                onClick={handleForgotPassword}
+                className="auth-forgot-link"
+              >
+                Forgot Password?
+              </a>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={submitting}
+              className="auth-primary-btn"
+              style={{ background: meta.color }}
+            >
+              <span>{submitting ? 'Verifying...' : 'Login'}</span>
+              <ArrowRight size={18} />
+            </button>
+
+            {/* Terms disclaimer */}
+            <p className="auth-terms-note">
+              Authorized personnel only. Access is cryptographically monitored and logged.
+            </p>
+
+            {/* Link to standard User login */}
+            <div className="auth-footer-link">
+              <span>Standard staff member? </span>
+              <Link to="/login" className="auth-link-btn" style={{ textDecoration: 'none' }}>
+                User Login
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
+
+      {/* Right Hero Banner Panel with Pure Lightweight Animated Card */}
+      <LoginHeroBanner role={targetRole} />
     </div>
   );
 };

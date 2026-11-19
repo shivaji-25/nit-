@@ -15,6 +15,11 @@ export const Navbar = () => {
   const { user, logout, role } = useAuth();
   const navigate = useNavigate();
 
+  // Hide Navbar when not authenticated for clean full-screen split login UX
+  if (!user) {
+    return null;
+  }
+
   const handleLogout = () => {
     logout();
     navigate('/login');
