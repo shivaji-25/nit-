@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LoginHeroBanner } from './LoginHeroBanner';
 import { WatercolorBackdrop } from './WatercolorBackdrop';
@@ -163,19 +162,7 @@ export const RoleLogin = ({ targetRole }) => {
               >
                 <span>{submitting ? 'Verifying...' : 'Sign in'}</span>
               </button>
-
-              <div className="untitled-alt-links">
-                <span>Authorized personnel only • </span>
-                <span style={{ color: '#94a3b8' }}>Cryptographically signed audit</span>
-              </div>
             </form>
-
-            <div className="untitled-bottom-switch">
-              <span>Standard staff member? </span>
-              <Link to="/login" className="untitled-link-underline">
-                User Login
-              </Link>
-            </div>
           </div>
         </div>
 
