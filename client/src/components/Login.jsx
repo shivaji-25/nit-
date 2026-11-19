@@ -16,18 +16,12 @@ export const Login = () => {
     setError('');
     setSubmitting(true);
 
-    // Standard user login (no requiredRole restriction)
-    const result = await login(username, password);
+    // Strictly enforce 'user' category login only (queries user_folder only)
+    const result = await login(username, password, 'user');
     setSubmitting(false);
 
     if (result.success && result.user) {
-      const userRole = result.user.role;
-      if (userRole === 'admin') navigate('/admin');
-      else if (userRole === 'salesman') navigate('/salesman');
-      else if (userRole === 'production') navigate('/production');
-      else if (userRole === 'auditor') navigate('/auditor');
-      else if (userRole === 'owner') navigate('/owner');
-      else navigate('/');
+      navigate('/user');
     } else {
       setError(result.message);
     }
@@ -42,7 +36,9 @@ export const Login = () => {
             <Factory size={32} color="#4f46e5" />
           </div>
           <h2>User Login</h2>
-          <p className="subtitle">Sign in to your account</p>
+          <p className="subtitle" style={{ fontWeight: 600, color: '#4f46e5' }}>
+            User login only
+          </p>
         </div>
 
         {/* Error Alert */}
@@ -61,7 +57,7 @@ export const Login = () => {
               <input
                 type="text"
                 required
-                placeholder="Enter username"
+                placeholder="user"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -83,7 +79,7 @@ export const Login = () => {
           </div>
 
           <button type="submit" disabled={submitting} className="btn-primary">
-            {submitting ? 'Signing in...' : 'Sign In'}
+            {submitting ? 'Verifying...' : 'Sign In'}
           </button>
         </form>
       </div>

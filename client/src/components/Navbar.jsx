@@ -32,6 +32,8 @@ export const Navbar = () => {
         return { label: 'Auditor (Read-Only)', color: 'badge-audit', icon: ClipboardCheck, path: '/auditor' };
       case 'owner':
         return { label: 'Factory Owner', color: 'badge-owner', icon: Briefcase, path: '/owner' };
+      case 'user':
+        return { label: 'Staff User', color: 'badge-default', icon: User, path: '/user' };
       default:
         return { label: roleName || 'Guest', color: 'badge-default', icon: User, path: '/login' };
     }

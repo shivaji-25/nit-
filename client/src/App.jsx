@@ -9,6 +9,7 @@ import { SalesmanPage } from './pages/SalesmanPage';
 import { ProductionPage } from './pages/ProductionPage';
 import { AuditorPage } from './pages/AuditorPage';
 import { OwnerPage } from './pages/OwnerPage';
+import { UserPage } from './pages/UserPage';
 
 // Smart root redirector based on authenticated user's role
 const RoleRedirect = () => {
@@ -37,6 +38,8 @@ const RoleRedirect = () => {
       return <Navigate to="/auditor" replace />;
     case 'owner':
       return <Navigate to="/owner" replace />;
+    case 'user':
+      return <Navigate to="/user" replace />;
     default:
       return <Navigate to="/login" replace />;
   }
@@ -111,6 +114,17 @@ const AppRoutes = () => {
           />
           <Route path="/Owner/*" element={<Navigate to="/owner" replace />} />
           <Route path="/owener/*" element={<Navigate to="/owner" replace />} />
+
+          {/* User Portal Only */}
+          <Route
+            path="/user/*"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <UserPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/User/*" element={<Navigate to="/user" replace />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

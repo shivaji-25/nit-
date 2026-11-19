@@ -5,7 +5,7 @@ async function testLogin(username, password, requiredRole = null) {
     const postData = JSON.stringify({ username, password, requiredRole });
     const req = http.request(
       {
-        hostname: 'localhost',
+        hostname: '127.0.0.1',
         port: 5000,
         path: '/auth/login',
         method: 'POST',
@@ -70,10 +70,20 @@ async function runRuleTests() {
   const t7 = await testLogin('owner', 'ownerPassword123', 'owner');
   console.log(`Status: ${t7.status} (Expected 200), Success: ${t7.data.success}`);
 
-  // Test 8: Username login at general /login without requiredRole
-  console.log('\n8. General user login with username "admin" (no requiredRole)...');
-  const t8 = await testLogin('admin', 'adminPassword123');
+  // Test 8: User login at /login (requiredRole: "user")
+  console.log('\n8. User "user" logging into User login (requiredRole: "user")...');
+  const t8 = await testLogin('user', 'userPassword123', 'user');
   console.log(`Status: ${t8.status} (Expected 200), Role received: ${t8.data.user.role}`);
+
+  // Test 9: Admin attempting to log in at /login (requiredRole: "user")
+  console.log('\n9. Admin attempting to log into User login (requiredRole: "user")...');
+  const t9 = await testLogin('admin', 'adminPassword123', 'user');
+  console.log(`Status: ${t9.status} (Expected 403), Message: "${t9.data.message}"`);
+
+  // Test 10: Salesman attempting to log in at /login (requiredRole: "user")
+  console.log('\n10. Salesman attempting to log into User login (requiredRole: "user")...');
+  const t10 = await testLogin('salesman', 'salesPassword123', 'user');
+  console.log(`Status: ${t10.status} (Expected 403), Message: "${t10.data.message}"`);
 
   console.log('\nAll Username Login & Role Restrictions Passed Successfully!');
   process.exit(0);
