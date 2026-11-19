@@ -1931,6 +1931,62 @@ body {
   background: #e4e4e7;
 }
 
+.google-native-section {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.google-native-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 6px 0;
+}
+
+.google-native-divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.google-native-divider span {
+  position: relative;
+  background: #18181b;
+  padding: 0 10px;
+  font-size: 11px;
+  color: #71717a;
+}
+
+.google-native-btn-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.google-native-tip {
+  font-size: 10.5px;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin: 4px 0 0 0;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.google-native-tip code {
+  color: #38bdf8;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
 .google-modal-footer {
   margin-top: 18px;
   padding-top: 12px;
