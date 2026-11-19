@@ -1,72 +1,94 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { User, ClipboardList, CheckCircle2, Shield } from 'lucide-react';
+import { EcommerceDashboard } from '../components/EcommerceDashboard';
+import { ShoppingBag, User, Database, ShieldCheck, Lock } from 'lucide-react';
 
 export const UserPage = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeView, setActiveView] = useState('store'); // 'store' | 'account'
 
   return (
-    <div className="portal-container">
-      <div className="portal-header admin-theme">
-        <div className="portal-header-left">
-          <div className="portal-icon-box">
-            <User size={28} color="#4f46e5" />
+    <div className="user-page-wrapper">
+      {/* Top Quick Bar for User Portal */}
+      <div className="user-portal-subnav">
+        <div className="user-portal-subnav-inner">
+          <div className="subnav-left">
+            <span className="subnav-pill active-pill">
+              <span className="subnav-beacon" />
+              <span>NIT Winter 2026 • FoodFlow Next-Gen</span>
+            </span>
           </div>
-          <div>
-            <h2>Standard User Portal</h2>
-            <p>Welcome back, {user?.name} • General Staff Access</p>
+
+          <div className="subnav-tabs">
+            <button
+              type="button"
+              className={`subnav-tab-btn ${activeView === 'store' ? 'active' : ''}`}
+              onClick={() => setActiveView('store')}
+            >
+              <ShoppingBag size={14} />
+              <span>Gourmet E-Commerce Catalogue</span>
+            </button>
+            <button
+              type="button"
+              className={`subnav-tab-btn ${activeView === 'account' ? 'active' : ''}`}
+              onClick={() => setActiveView('account')}
+            >
+              <User size={14} />
+              <span>Account & Atlas Storage</span>
+            </button>
           </div>
-        </div>
-        <div className="url-indicator">
-          <code>http://localhost:5173/user</code>
         </div>
       </div>
 
-      {/* User Tabs */}
-      <div className="portal-tabs">
-        <button
-          className={`portal-tab ${activeTab === 'profile' ? 'active' : ''}`}
-          onClick={() => setActiveTab('profile')}
-        >
-          <ClipboardList size={16} />
-          <span>My Profile & Session</span>
-        </button>
-      </div>
-
-      {/* Main Tab Content */}
-      <div className="portal-body">
-        <div className="section-card">
-          <div className="section-card-header">
-            <h3>User Screen: <span className="highlight-tab">{activeTab}</span></h3>
-            <span className="badge-ready">Data stored in user_folder</span>
-          </div>
-          <div className="portal-intro-card">
-            <div className="intro-badge">
-              <CheckCircle2 size={16} color="#4f46e5" />
-              <span>User Folder Data Isolated</span>
+      {/* Main View Router */}
+      {activeView === 'store' ? (
+        <EcommerceDashboard />
+      ) : (
+        <div className="portal-container" style={{ paddingTop: '20px' }}>
+          <div className="section-card">
+            <div className="section-card-header">
+              <h3>User Security & Isolation Profile</h3>
+              <span className="badge-ready">Storage: user_folder</span>
             </div>
-            <p>
-              Your account details and activity are strictly stored inside the <strong>user_folder</strong> collection in MongoDB Atlas.
-              Other roles (admin, salesman, production, auditor, owner) are stored in their own separate collection folders.
-            </p>
-            <div className="quick-specs-grid" style={{ marginTop: '16px' }}>
-              <div className="spec-item">
-                <span className="spec-label">Username:</span>
-                <span className="spec-val">{user?.username}</span>
+            <div className="portal-intro-card">
+              <div className="intro-badge">
+                <ShieldCheck size={16} color="#10b981" />
+                <span>MongoDB Atlas Collection Isolation Active</span>
               </div>
-              <div className="spec-item">
-                <span className="spec-label">Role:</span>
-                <span className="spec-val uppercase">{user?.role}</span>
-              </div>
-              <div className="spec-item">
-                <span className="spec-label">Storage Collection:</span>
-                <span className="spec-val">user_folder</span>
+              <p>
+                Your account credentials and order history are strictly stored inside the <strong>user_folder</strong> collection in MongoDB Atlas under <code>food_mfg_db</code>.
+                Cross-role boundaries enforce strict 403 access control against admin, salesman, production, auditor, and owner directories.
+              </p>
+              <div className="quick-specs-grid" style={{ marginTop: '16px' }}>
+                <div className="spec-item">
+                  <span className="spec-label">User Name:</span>
+                  <span className="spec-val">{user?.name}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Email / Identifier:</span>
+                  <span className="spec-val">{user?.email || user?.username}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Role Category:</span>
+                  <span className="spec-val uppercase">{user?.role}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">MongoDB Atlas Target:</span>
+                  <span className="spec-val" style={{ color: '#10b981', fontWeight: 700 }}>user_folder</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Financial Unit Standard:</span>
+                  <span className="spec-val">Integer Paise (FR-1.5)</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Encryption:</span>
+                  <span className="spec-val">AES-256 + JWT (7d)</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
