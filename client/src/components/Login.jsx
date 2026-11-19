@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
-import { BrandEmblem } from './BrandEmblem';
 import { LoginHeroBanner } from './LoginHeroBanner';
 import { ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 
@@ -112,9 +111,12 @@ export const Login = () => {
       {/* Left Form Panel */}
       <div className="auth-form-panel">
         <div className="auth-form-box">
-          {/* Brand Emblem Logo */}
+          {/* Brand Header */}
           <div className="auth-brand-header">
-            <BrandEmblem size={44} />
+            <div className="auth-system-badge">
+              <span className="system-status-dot"></span>
+              <span className="system-badge-text">FoodFlow OMS • Order-to-Audit</span>
+            </div>
             <h1 className="auth-heading">
               {mode === 'signin' ? 'Welcome Back !' : 'Create Account'}
             </h1>

@@ -1,206 +1,203 @@
 import React, { useState, useEffect } from 'react';
+import { ChefHat, Factory, PackageCheck, ShieldCheck, ArrowRight, Activity, CheckCircle, Database } from 'lucide-react';
 
-const slidesData = [
+const pipelineStages = [
   {
-    tag: 'OMS Platform',
-    title: 'Seamless work experience',
-    desc: 'Everything you need in an easily customizable dashboard',
-    badge1: 'Live Batch #204',
-    badge1Sub: '1,250 kg processed',
-    badge2: 'Ledger Audit',
-    badge2Sub: 'Strict FIFO traceability',
+    id: 'recipe',
+    number: '01',
+    label: 'Recipe & Stock',
+    icon: ChefHat,
+    title: 'Precision Recipe Batching',
+    desc: 'Automated gram-level ingredient scaling from formula to warehouse requisition.',
+    metric1: { label: 'Wheat Flour', value: '50.0 kg', pct: 65, color: '#3b82f6' },
+    metric2: { label: 'Cane Sugar', value: '12.5 kg', pct: 20, color: '#f59e0b' },
+    metric3: { label: 'Dairy Butter', value: '8.0 kg', pct: 15, color: '#10b981' },
+    status: 'Warehouse Stock Reserved • FIFO Validated',
   },
   {
-    tag: 'Recipe Batching',
-    title: 'Automated recipe scaling',
-    desc: 'Raw material batching with gram-level precision & lot tracking',
-    badge1: 'Formula Synced',
-    badge1Sub: 'Zero manual calculation',
-    badge2: 'Stock Control',
-    badge2Sub: 'Derived strictly via ledger',
+    id: 'production',
+    number: '02',
+    label: 'Batch Mixing',
+    icon: Factory,
+    title: 'Industrial Production Floor',
+    desc: 'Real-time dough batch mixing, temperature monitoring, and yield tracking.',
+    metric1: { label: 'Batch ID', value: '#B26-104', pct: 100, color: '#6366f1' },
+    metric2: { label: 'Oven Temp', value: '185°C (Optimal)', pct: 92, color: '#ef4444' },
+    metric3: { label: 'Yield Efficiency', value: '98.6%', pct: 98, color: '#10b981' },
+    status: 'Mixer Active • Zero Waste Threshold Maintained',
   },
   {
-    tag: 'Role Security',
-    title: 'Multi-role cryptographic audit',
-    desc: 'Isolated role portals with tamper-evident audit records',
-    badge1: 'Vault Verified',
-    badge1Sub: 'Protected ledger hashes',
-    badge2: 'Access Guard',
-    badge2Sub: 'Isolated collection folders',
+    id: 'packing',
+    number: '03',
+    label: 'Packing & FIFO',
+    icon: PackageCheck,
+    title: 'Finished Goods & Dispatch',
+    desc: 'Automated packing line with unit-level barcoding and ledger auto-credit.',
+    metric1: { label: 'SKU Pack', value: 'Classic Butter 250g', pct: 100, color: '#8b5cf6' },
+    metric2: { label: 'Units Sealed', value: '1,200 packs', pct: 85, color: '#3b82f6' },
+    metric3: { label: 'Expiry Date', value: '19-Dec-2026', pct: 100, color: '#10b981' },
+    status: 'Stock Ledger Credited • Ready for Field Sales',
+  },
+  {
+    id: 'audit',
+    number: '04',
+    label: 'Cryptographic Audit',
+    icon: ShieldCheck,
+    title: 'Immutable Audit Trail',
+    desc: 'Cryptographic SHA-256 transaction blocks preventing stock divergence.',
+    metric1: { label: 'Block Hash', value: 'SHA-256 0x7f4a...8b9c', pct: 100, color: '#10b981' },
+    metric2: { label: 'Role Isolation', value: 'Separated Folders', pct: 100, color: '#6366f1' },
+    metric3: { label: 'Stock Divergence', value: '0.00% Verified', pct: 100, color: '#10b981' },
+    status: 'Tamper-Proof Ledger • Auditor Portal Approved',
   },
 ];
 
 export const LoginHeroBanner = ({ role = 'user' }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [activeStageIdx, setActiveStageIdx] = useState(0);
 
+  // Auto-advance through the real food manufacturing pipeline every 5 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slidesData.length);
+      setActiveStageIdx((prev) => (prev + 1) % pipelineStages.length);
     }, 5000);
     return () => clearInterval(timer);
   }, []);
 
-  const slide = slidesData[currentSlide];
+  const stage = pipelineStages[activeStageIdx];
+  const StageIcon = stage.icon;
 
   return (
     <div className={`auth-hero-panel ${role}-hero`}>
       <div className="auth-hero-glass-card">
-        {/* Animated Scene with Hanging Lamp and Working Character */}
-        <div className="auth-scene-container">
-          {/* Ceiling Cord and Hanging Lamp */}
-          <div className="scene-lamp-wrapper">
-            <div className="scene-lamp-cord"></div>
-            <div className="scene-lamp-shade"></div>
-            <div className="scene-lamp-glow"></div>
+        {/* Real-Time Live Header */}
+        <div className="flow-live-header">
+          <div className="flow-live-indicator">
+            <span className="live-pulsing-node"></span>
+            <span className="live-status-title">Live Food Manufacturing Pipeline</span>
           </div>
+          <span className="live-stage-badge">Stage {stage.number} of 04</span>
+        </div>
 
-          {/* Floating Live Badge 1 */}
-          <div className="floating-badge badge-top-left">
-            <div className="badge-pulse-dot"></div>
-            <div className="badge-text-group">
-              <span className="badge-title">{slide.badge1}</span>
-              <span className="badge-sub">{slide.badge1Sub}</span>
+        {/* 4-Stage Interactive Pipeline Navigation Tabs */}
+        <div className="pipeline-nav-bar">
+          {pipelineStages.map((stg, idx) => {
+            const Icon = stg.icon;
+            const isActive = idx === activeStageIdx;
+            return (
+              <button
+                key={stg.id}
+                type="button"
+                className={`pipeline-tab-btn ${isActive ? 'active' : ''}`}
+                onClick={() => setActiveStageIdx(idx)}
+              >
+                <Icon size={14} />
+                <span>{stg.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Animated Active Stage Showcase Window */}
+        <div className="pipeline-stage-card">
+          <div className="stage-top-row">
+            <div className="stage-icon-circle">
+              <StageIcon size={24} color="#ffffff" />
+            </div>
+            <div className="stage-title-group">
+              <h3 className="stage-title">{stage.title}</h3>
+              <p className="stage-desc">{stage.desc}</p>
             </div>
           </div>
 
-          {/* Floating Live Badge 2 */}
-          <div className="floating-badge badge-bottom-right">
-            <div className="badge-check-icon">✓</div>
-            <div className="badge-text-group">
-              <span className="badge-title">{slide.badge2}</span>
-              <span className="badge-sub">{slide.badge2Sub}</span>
+          {/* Real-time Dynamic Metric Gauges */}
+          <div className="stage-metrics-grid">
+            <div className="metric-box">
+              <div className="metric-header">
+                <span className="metric-label">{stage.metric1.label}</span>
+                <span className="metric-val" style={{ color: stage.metric1.color }}>
+                  {stage.metric1.value}
+                </span>
+              </div>
+              <div className="metric-progress-bg">
+                <div
+                  className="metric-progress-fill"
+                  style={{
+                    width: `${stage.metric1.pct}%`,
+                    backgroundColor: stage.metric1.color,
+                  }}
+                ></div>
+              </div>
+            </div>
+
+            <div className="metric-box">
+              <div className="metric-header">
+                <span className="metric-label">{stage.metric2.label}</span>
+                <span className="metric-val" style={{ color: stage.metric2.color }}>
+                  {stage.metric2.value}
+                </span>
+              </div>
+              <div className="metric-progress-bg">
+                <div
+                  className="metric-progress-fill"
+                  style={{
+                    width: `${stage.metric2.pct}%`,
+                    backgroundColor: stage.metric2.color,
+                  }}
+                ></div>
+              </div>
+            </div>
+
+            <div className="metric-box">
+              <div className="metric-header">
+                <span className="metric-label">{stage.metric3.label}</span>
+                <span className="metric-val" style={{ color: stage.metric3.color }}>
+                  {stage.metric3.value}
+                </span>
+              </div>
+              <div className="metric-progress-bg">
+                <div
+                  className="metric-progress-fill"
+                  style={{
+                    width: `${stage.metric3.pct}%`,
+                    backgroundColor: stage.metric3.color,
+                  }}
+                ></div>
+              </div>
             </div>
           </div>
 
-          {/* 3D-Styled Working Character SVG Illustration */}
-          <svg
-            className="scene-illustration"
-            viewBox="0 0 320 260"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <defs>
-              <linearGradient id="beanbagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#2c303c" />
-                <stop offset="50%" stopColor="#1e222d" />
-                <stop offset="100%" stopColor="#111319" />
-              </linearGradient>
-              <linearGradient id="screenGlow" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#818cf8" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#4f46e5" stopOpacity="0.1" />
-              </linearGradient>
-              <linearGradient id="laptopBody" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#e2e8f0" />
-                <stop offset="100%" stopColor="#94a3b8" />
-              </linearGradient>
-            </defs>
-
-            {/* Ambient Shadow under Beanbag */}
-            <ellipse cx="160" cy="235" rx="100" ry="20" fill="rgba(0,0,0,0.35)" />
-
-            {/* Cozy Charcoal Beanbag Chair */}
-            <path
-              d="M85 175C75 140 90 95 140 85C195 75 240 105 245 155C250 195 225 225 180 230C130 235 90 205 85 175Z"
-              fill="url(#beanbagGrad)"
-            />
-            {/* Beanbag stitch creases */}
-            <path
-              d="M100 160C125 180 170 195 220 185"
-              stroke="rgba(255,255,255,0.08)"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <path
-              d="M130 115C140 145 155 185 160 215"
-              stroke="rgba(255,255,255,0.06)"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-
-            {/* Character Legs / Trousers (Dark charcoal) */}
-            <path
-              d="M150 170L195 195L185 208L140 185Z"
-              fill="#181a20"
-            />
-            <path
-              d="M165 175L215 205L205 218L155 190Z"
-              fill="#0f1115"
-            />
-
-            {/* White Sneakers */}
-            <ellipse cx="192" cy="207" rx="14" ry="8" fill="#ffffff" />
-            <ellipse cx="212" cy="216" rx="15" ry="8" fill="#f8fafc" />
-            <path d="M182 208C185 205 195 205 200 208" stroke="#cbd5e1" strokeWidth="1.5" />
-            <path d="M202 217C205 214 215 214 220 217" stroke="#cbd5e1" strokeWidth="1.5" />
-
-            {/* Character Torso / Dark Sweater */}
-            <path
-              d="M135 125C135 110 150 105 165 105C180 105 195 112 195 130L185 175C170 178 145 178 135 175Z"
-              fill="#2d3139"
-            />
-
-            {/* Character Neck */}
-            <rect x="160" y="96" width="10" height="12" rx="4" fill="#fbcfe8" />
-
-            {/* Character Head & Friendly Facial Profile */}
-            <circle cx="165" cy="85" r="15" fill="#fbcfe8" />
-            {/* Stylish Hair (Brown wavy volume) */}
-            <path
-              d="M150 82C150 70 162 65 175 66C185 67 190 74 188 82C185 80 178 77 172 79C166 81 160 84 150 82Z"
-              fill="#78350f"
-            />
-            <path
-              d="M150 82C148 88 152 92 155 93C155 88 153 84 150 82Z"
-              fill="#5c2608"
-            />
-            {/* Eye & Smile */}
-            <circle cx="171" cy="84" r="1.5" fill="#1e293b" />
-            <path d="M172 90C170 92 168 92 166 91" stroke="#1e293b" strokeWidth="1" strokeLinecap="round" />
-
-            {/* Left & Right Arms holding Laptop */}
-            <path
-              d="M140 135C140 135 150 155 165 158"
-              stroke="#2d3139"
-              strokeWidth="9"
-              strokeLinecap="round"
-            />
-            <path
-              d="M180 135C180 135 175 155 160 158"
-              stroke="#262a31"
-              strokeWidth="9"
-              strokeLinecap="round"
-            />
-            <circle cx="164" cy="158" r="4.5" fill="#fbcfe8" />
-
-            {/* Laptop Base */}
-            <polygon points="145,160 185,160 180,165 140,165" fill="url(#laptopBody)" />
-
-            {/* Laptop Screen Open at Angle */}
-            <polygon points="146,160 142,128 178,124 182,156" fill="#f1f5f9" />
-            <polygon points="148,158 145,131 176,128 179,155" fill="#0f172a" />
-            {/* Glowing Screen Light Cone */}
-            <polygon points="148,158 145,131 176,128 179,155" fill="url(#screenGlow)" />
-            {/* Apple / Brand logo dot on back of lid */}
-            <circle cx="160" cy="142" r="2.5" fill="#ffffff" />
-          </svg>
+          {/* Verification Status Banner */}
+          <div className="stage-status-strip">
+            <CheckCircle size={14} color="#22c55e" />
+            <span>{stage.status}</span>
+          </div>
         </div>
 
-        {/* Text Section */}
-        <div className="auth-hero-text">
-          <span className="auth-hero-tag">{slide.tag}</span>
-          <h2 className="auth-hero-title">{slide.title}</h2>
-          <p className="auth-hero-desc">{slide.desc}</p>
+        {/* Real System Architecture Ticker */}
+        <div className="pipeline-stats-footer">
+          <div className="stat-pill">
+            <Activity size={12} color="#38bdf8" />
+            <span>Daily Output: <strong>2,450 kg</strong></span>
+          </div>
+          <div className="stat-pill">
+            <Database size={12} color="#22c55e" />
+            <span>Atlas: <strong>user_folder</strong></span>
+          </div>
+          <div className="stat-pill">
+            <ShieldCheck size={12} color="#a855f7" />
+            <span>Audit: <strong>100% Synced</strong></span>
+          </div>
         </div>
 
-        {/* Interactive Carousel Dots */}
+        {/* Carousel Indicator Dots */}
         <div className="auth-carousel-dots">
-          {slidesData.map((_, idx) => (
+          {pipelineStages.map((_, idx) => (
             <button
               key={idx}
               type="button"
-              className={`carousel-dot ${idx === currentSlide ? 'active' : ''}`}
-              onClick={() => setCurrentSlide(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
+              className={`carousel-dot ${idx === activeStageIdx ? 'active' : ''}`}
+              onClick={() => setActiveStageIdx(idx)}
+              aria-label={`Go to pipeline stage ${idx + 1}`}
             />
           ))}
         </div>

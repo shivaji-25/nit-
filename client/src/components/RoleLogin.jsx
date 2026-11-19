@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BrandEmblem } from './BrandEmblem';
 import { LoginHeroBanner } from './LoginHeroBanner';
 import { ArrowRight, AlertCircle, Shield, Smartphone, Factory, ClipboardCheck, Briefcase } from 'lucide-react';
 
@@ -77,9 +76,20 @@ export const RoleLogin = ({ targetRole }) => {
       {/* Left Form Panel */}
       <div className="auth-form-panel">
         <div className="auth-form-box">
-          {/* Brand Emblem Logo */}
+          {/* Brand Header */}
           <div className="auth-brand-header">
-            <BrandEmblem size={44} />
+            <div
+              className="auth-system-badge"
+              style={{ borderColor: `${meta.color}40`, background: `${meta.color}0d` }}
+            >
+              <span
+                className="system-status-dot"
+                style={{ background: meta.color, boxShadow: `0 0 8px ${meta.color}` }}
+              ></span>
+              <span className="system-badge-text" style={{ color: meta.color }}>
+                FoodFlow OMS • {meta.title}
+              </span>
+            </div>
             <h1 className="auth-heading">Welcome Back !</h1>
             <p className="auth-subheading">
               Please enter your {meta.roleTag} credentials to sign in
