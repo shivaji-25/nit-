@@ -1,53 +1,47 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
-import { Lock, User, Shield, Smartphone, Factory, ClipboardCheck, Briefcase, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Lock, User, Shield, Smartphone, Factory, ClipboardCheck, Briefcase } from 'lucide-react';
 
 const roleMeta = {
   admin: {
-    title: 'Factory Admin Portal',
-    sub: 'Desk Verification, GST Invoicing & Dispatch',
+    title: 'Admin Login',
+    sub: 'Admin login only',
     icon: Shield,
-    themeClass: 'admin-theme',
     color: '#4f46e5',
-    url: '/admin',
-    desc: 'Only authorized Factory Admin credentials are accepted at this link.',
+    themeClass: 'admin-theme',
+    placeholder: 'admin@factory.com',
   },
   salesman: {
-    title: 'Field Salesman Portal',
-    sub: 'Mobile Order Placement & Sales Tracking',
+    title: 'Salesman Login',
+    sub: 'Salesman login only',
     icon: Smartphone,
-    themeClass: 'salesman-theme',
     color: '#059669',
-    url: '/salesman',
-    desc: 'Only field salesmen credentials are accepted at this link.',
+    themeClass: 'salesman-theme',
+    placeholder: 'salesman@factory.com',
   },
   production: {
-    title: 'Production Floor Portal',
-    sub: 'Recipe BOM Runs, RM Purchases & Output',
+    title: 'Production Login',
+    sub: 'Production login only',
     icon: Factory,
-    themeClass: 'prod-theme',
     color: '#d97706',
-    url: '/production',
-    desc: 'Only floor supervisors and production staff are accepted at this link.',
+    themeClass: 'prod-theme',
+    placeholder: 'production@factory.com',
   },
   auditor: {
-    title: 'Auditor & Accountant Portal',
-    sub: 'Read-Only Stock Ledger & Tax Compliance',
+    title: 'Auditor & Accounts Login',
+    sub: 'Auditor & Accounts login only',
     icon: ClipboardCheck,
-    themeClass: 'audit-theme',
     color: '#7c3aed',
-    url: '/auditor',
-    desc: 'Only authorized auditors and accountants are accepted at this link.',
+    themeClass: 'audit-theme',
+    placeholder: 'auditor@factory.com',
   },
   owner: {
-    title: 'Factory Owner Portal',
-    sub: 'Executive Overview, Costing & Variance Insights',
+    title: 'Owner Login',
+    sub: 'Owner login only',
     icon: Briefcase,
-    themeClass: 'owner-theme',
     color: '#e11d48',
-    url: '/owner',
-    desc: 'Only factory executive / owner credentials are accepted at this link.',
+    themeClass: 'owner-theme',
+    placeholder: 'owner@factory.com',
   },
 };
 
@@ -66,7 +60,7 @@ export const RoleLogin = ({ targetRole }) => {
     setError('');
     setSubmitting(true);
 
-    // Enforce requiredRole rule on login call
+    // Enforce targetRole rule on server
     const result = await login(email, password, targetRole);
     setSubmitting(false);
 
@@ -78,25 +72,15 @@ export const RoleLogin = ({ targetRole }) => {
   return (
     <div className="login-container">
       <div className={`login-card ${meta.themeClass}`}>
-        {/* Back to Gateway */}
-        <div style={{ marginBottom: '16px' }}>
-          <Link to="/login" className="back-link">
-            <ArrowLeft size={16} />
-            <span>All Category Portals Gateway</span>
-          </Link>
-        </div>
-
         {/* Header */}
         <div className="login-header">
           <div className="login-logo-circle" style={{ background: `${meta.color}15` }}>
             <RoleIcon size={32} color={meta.color} />
           </div>
           <h2>{meta.title}</h2>
-          <p className="subtitle">{meta.sub}</p>
-          <div className="role-rule-pill">
-            <AlertCircle size={14} color={meta.color} />
-            <span>Strict Rule: Only <strong>{targetRole.toUpperCase()}</strong> accounts can log in here</span>
-          </div>
+          <p className="subtitle" style={{ fontWeight: 600, color: meta.color }}>
+            {meta.sub}
+          </p>
         </div>
 
         {/* Error Alert */}
@@ -106,16 +90,16 @@ export const RoleLogin = ({ targetRole }) => {
           </div>
         )}
 
-        {/* Category Login Form */}
+        {/* Form */}
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>{meta.title} Email</label>
+            <label>Email Address</label>
             <div className="input-wrapper">
               <User size={18} className="input-icon" />
               <input
                 type="email"
                 required
-                placeholder={`${targetRole}@factory.com`}
+                placeholder={meta.placeholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -142,16 +126,9 @@ export const RoleLogin = ({ targetRole }) => {
             className="btn-primary"
             style={{ background: meta.color }}
           >
-            {submitting ? 'Verifying Role & Signing In...' : `Sign In to ${meta.title}`}
+            {submitting ? 'Verifying...' : `Sign In`}
           </button>
         </form>
-
-        <div className="login-footer-info">
-          <p>
-            Current Link: <code>http://localhost:5173{meta.url}</code>
-          </p>
-          <p className="hint-text">{meta.desc}</p>
-        </div>
       </div>
     </div>
   );

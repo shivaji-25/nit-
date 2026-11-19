@@ -48,13 +48,14 @@ const AppRoutes = () => {
       <Navbar />
       <main className="main-container">
         <Routes>
-          {/* Public Login Route */}
+          {/* User Login Only */}
           <Route path="/login" element={<Login />} />
+          <Route path="/Login" element={<Navigate to="/login" replace />} />
 
           {/* Root Redirect to Role Portal */}
           <Route path="/" element={<RoleRedirect />} />
 
-          {/* Separated Role Portals with Route Guards */}
+          {/* Admin Login & Portal Only */}
           <Route
             path="/admin/*"
             element={
@@ -63,7 +64,9 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/Admin/*" element={<Navigate to="/admin" replace />} />
 
+          {/* Salesman Login & Portal Only */}
           <Route
             path="/salesman/*"
             element={
@@ -72,9 +75,10 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-          {/* Alias for /saleman typo */}
+          <Route path="/Salesman/*" element={<Navigate to="/salesman" replace />} />
           <Route path="/saleman/*" element={<Navigate to="/salesman" replace />} />
 
+          {/* Production Floor Login & Portal Only */}
           <Route
             path="/production/*"
             element={
@@ -83,7 +87,9 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/Production/*" element={<Navigate to="/production" replace />} />
 
+          {/* Auditor & Accounts Login & Portal Only */}
           <Route
             path="/auditor/*"
             element={
@@ -92,7 +98,9 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/Auditor/*" element={<Navigate to="/auditor" replace />} />
 
+          {/* Owner Login & Portal Only */}
           <Route
             path="/owner/*"
             element={
@@ -101,7 +109,7 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-          {/* Alias for /owener typo */}
+          <Route path="/Owner/*" element={<Navigate to="/owner" replace />} />
           <Route path="/owener/*" element={<Navigate to="/owner" replace />} />
 
           {/* Fallback */}

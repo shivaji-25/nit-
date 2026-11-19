@@ -54,10 +54,18 @@ exports.login = async (req, res) => {
     }
 
     // Enforce role rule: if login is attempted from a specific category portal link, verify role match
-    if (requiredRole && user.role !== requiredRole) {
+    if (requiredRole && user.role !== requiredRole.toLowerCase()) {
+      const displayNames = {
+        admin: 'Admin',
+        salesman: 'Salesman',
+        production: 'Production',
+        auditor: 'Auditor & Accounts',
+        owner: 'Owner',
+      };
+      const expected = displayNames[requiredRole.toLowerCase()] || requiredRole;
       return res.status(403).json({
         success: false,
-        message: `Portal rule violation: This portal is strictly for '${requiredRole.toUpperCase()}', but your account is registered as '${user.role.toUpperCase()}'. Please log in via the /${user.role} link.`,
+        message: `Access Denied: This link is for ${expected} login only.`,
       });
     }
 
