@@ -4,7 +4,9 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import './index.css'
 import App from './App.jsx'
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '123456789-abc.apps.googleusercontent.com';
+const rawClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const isRealOAuthClient = typeof rawClientId === 'string' && rawClientId.endsWith('.apps.googleusercontent.com');
+const GOOGLE_CLIENT_ID = isRealOAuthClient ? rawClientId : '100000000000-placeholder.apps.googleusercontent.com';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -12,5 +14,5 @@ createRoot(document.getElementById('root')).render(
       <App />
     </GoogleOAuthProvider>
   </StrictMode>,
-)
+);
 

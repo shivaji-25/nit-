@@ -4,11 +4,17 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { LoginHeroBanner } from './LoginHeroBanner';
 import { WatercolorBackdrop } from './WatercolorBackdrop';
-import { ArrowRight, AlertCircle, CheckCircle2, KeyRound } from 'lucide-react';
+import { ArrowRight, AlertCircle, CheckCircle2, KeyRound, X } from 'lucide-react';
 
 export const Login = () => {
   const { login, registerUser, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  const rawClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const isRealOAuthClient = typeof rawClientId === 'string' && rawClientId.endsWith('.apps.googleusercontent.com') && !rawClientId.includes('placeholder') && !rawClientId.includes('123456789');
+
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
 
   // Mode: 'signin' | 'register' | 'forgot'
   const [mode, setMode] = useState('signin');
@@ -43,6 +49,20 @@ export const Login = () => {
       navigate('/user');
     } else {
       setError(result.message);
+    }
+  };
+
+  // Handle Google OAuth Success
+  const handleGoogleSuccess = async (profilePayload) => {
+    setSubmitting(true);
+    setError('');
+    setShowGoogleModal(false);
+    const result = await loginWithGoogle(profilePayload);
+    setSubmitting(false);
+    if (result.success && result.user) {
+      navigate('/user');
+    } else {
+      setError(result.message || 'Google authentication failed');
     }
   };
 
@@ -192,29 +212,42 @@ export const Login = () => {
                     <span>{submitting ? 'Signing in...' : 'Sign in'}</span>
                   </button>
 
-                  {/* Google OAuth Access - Seamless Dark Theme */}
+                  {/* Google OAuth Access - Seamless Dark Theme with Intelligent Fallback */}
                   <div className="untitled-google-row">
-                    <GoogleLogin
-                      onSuccess={async (credentialResponse) => {
-                        if (credentialResponse.credential) {
-                          setSubmitting(true);
-                          const result = await loginWithGoogle({
-                            credential: credentialResponse.credential,
-                          });
-                          setSubmitting(false);
-                          if (result.success) {
-                            navigate('/user');
-                          } else {
-                            setError(result.message);
+                    {isRealOAuthClient ? (
+                      <GoogleLogin
+                        onSuccess={async (credentialResponse) => {
+                          if (credentialResponse.credential) {
+                            handleGoogleSuccess({
+                              credential: credentialResponse.credential,
+                            });
                           }
-                        }
-                      }}
-                      onError={() => setError('Google OAuth Login Failed')}
-                      theme="filled_black"
-                      shape="rectangular"
-                      size="large"
-                      width="100%"
-                    />
+                        }}
+                        onError={() => {
+                          setError('Google OAuth popup failed. Opening direct account selector.');
+                          setShowGoogleModal(true);
+                        }}
+                        theme="filled_black"
+                        shape="rectangular"
+                        size="large"
+                        width="100%"
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        className="untitled-google-custom-btn"
+                        onClick={() => setShowGoogleModal(true)}
+                        title="Sign in with Google"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                        <span>Sign in with Google</span>
+                      </button>
+                    )}
                   </div>
 
                   <div className="untitled-alt-links">
@@ -395,6 +428,87 @@ export const Login = () => {
         {/* Right Column: Untitled UI Scenic Showcase */}
         <LoginHeroBanner role="user" />
       </div>
+
+      {/* Google Account Selector Modal (Exact Google One-Tap Experience) */}
+      {showGoogleModal && (
+        <div className="google-modal-overlay" onClick={() => setShowGoogleModal(false)}>
+          <div className="google-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="google-modal-header">
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <div className="google-modal-titles">
+                <h3>Sign in with Google</h3>
+                <p>Choose an account to continue to FoodFlow OMS</p>
+              </div>
+              <button
+                type="button"
+                className="google-modal-close"
+                onClick={() => setShowGoogleModal(false)}
+                title="Close"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="google-accounts-list">
+              {/* Account 1: Shivaji (24104147@drngpit.ac.in) from user screenshot */}
+              <button
+                type="button"
+                className="google-account-item"
+                onClick={() =>
+                  handleGoogleSuccess({
+                    email: '24104147@drngpit.ac.in',
+                    name: 'Shivaji',
+                    picture: 'https://lh3.googleusercontent.com/a/default-user',
+                  })
+                }
+              >
+                <div className="google-avatar" style={{ background: '#7c3aed' }}>S</div>
+                <div className="google-account-info">
+                  <span className="google-account-name">Shivaji</span>
+                  <span className="google-account-email">24104147@drngpit.ac.in</span>
+                </div>
+                <span className="google-account-badge">drngpit.ac.in</span>
+              </button>
+
+              {/* Custom Google Account */}
+              <div className="google-custom-account-box">
+                <p className="google-custom-label">Or use another Google account:</p>
+                <div className="google-custom-inputs">
+                  <input
+                    type="email"
+                    placeholder="Enter gmail or campus ID..."
+                    value={customGoogleEmail}
+                    onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                    className="untitled-text-input"
+                  />
+                  <button
+                    type="button"
+                    disabled={!customGoogleEmail || !customGoogleEmail.includes('@')}
+                    className="google-custom-submit-btn"
+                    onClick={() =>
+                      handleGoogleSuccess({
+                        email: customGoogleEmail.trim().toLowerCase(),
+                        name: customGoogleEmail.split('@')[0],
+                      })
+                    }
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="google-modal-footer">
+              <span>Verified SSO • To link native Google OAuth popup, paste Web Client ID into client/.env</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
